@@ -68,7 +68,10 @@ function App() {
   function handleLogout() {
     const logout = async () => {
       try {
-        const res = await fetch('http://localhost:54321/logout', {method: 'POST'});
+        const res = await fetch('http://localhost:54321/logout', {
+          method: 'POST',
+          credentials: 'include',
+        });
 
         if (res.ok) {
           setUsername(null);

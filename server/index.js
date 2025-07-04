@@ -60,12 +60,11 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.post('/logout', (req, res) => {
+app.post('/logout', requireLogin, (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             return res.status(500).json({ error: 'Logout failed' });
         }
-        res.status(200).send("Logged out successfully.");
         res.clearCookie('connect.sid'); // default session cookie name    
         res.json({ message: 'Logged out' });
     });

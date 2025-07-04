@@ -1,7 +1,6 @@
 import './css/PortionTable.css';
 
 function PortionTable({ portions }) {
-    console.log(portions);
     const tableRows = portions.map(portion => {
         return (
             <tr key={portion.portionId}>
