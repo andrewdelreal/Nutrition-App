@@ -4,10 +4,13 @@
 import AuthBox from './AuthBox';
 import Header from './Header';
 import LogoutButton from './LogoutButton';
+import PortionTable from './PortionTable';
+
 import { useState, useEffect } from 'react';
 
 function App() {
   const [username, setUsername] = useState(null);
+  const [portions, setPortions] = useState([]);
 
   function handleLogin(credentials) {
     const login = async () => {
@@ -84,7 +87,10 @@ function App() {
       {!username ? (
         <AuthBox onLogin={handleLogin} onRegister={handleRegister}/>
       ) : (
-        <LogoutButton onLogout={handleLogout}/>
+        <div>
+          <LogoutButton onLogout={handleLogout}/>
+          <PortionTable portions={portions}/>
+        </div>
       )}
       
     </div>
