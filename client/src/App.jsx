@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// import { useState } from 'react'
+// import reactLogo from './assets/react.svg'
+// import viteLogo from '/vite.svg'
+import AuthBox from './AuthBox';
+import { useState, useEffect } from 'react';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [username, setUsername] = useState(null);
+
+  function handleLogin(credentials) {
+    const login = async () => {
+      try {
+        const res = await fetch('http://localhost:54321/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(credentials)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setUsername(data.username);
+        } else {
+          console.error('Login failed');
+        }
+      } catch (err) {
+        console.error('Error loging in:', err);
+      }
+    };
+
+    login();
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      {!username ? (
+        <AuthBox onLogin={handleLogin}/>
+      ) : (
+        <p>Please log in or register.</p>
+      )}
+      
+    </div>
+  );
 }
 
-export default App
+export default App;

@@ -1,0 +1,53 @@
+.card {
+    font-family: 'Poppins', sans-serif;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+.card-title {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+    color: #2b2d42;
+}
+.form-group {
+    margin-bottom: 0.75rem;
+}
+input, button {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f7f7f7;
+    font-size: 1rem;
+    transition: border 0.3s ease;
+    box-sizing: border-box;
+}
+
+input:focus {
+    border-color: #ff6b6b;
+    outline: none;
+    background-color: #fff;
+}
+
+button {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ff6b6b, #feca57);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background: linear-gradient(90deg, #feca57, #ff6b6b);
+    transform: translateY(-2px);
+}
+
+hr {
+    margin: 1rem 0;
+}

@@ -7,6 +7,7 @@ const DBAbstraction = require('./DBAbstraction');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
+const cors = require('cors');
 
 const port = 54321;
  
@@ -23,6 +24,7 @@ app.use(session({
 app.use(morgan('dev')); 
 app.use(bodyParser.urlencoded({ extended: false })); 
 app.use(bodyParser.json()); 
+app.use(cors());
 
 app.use(express.static('public'));  
 
