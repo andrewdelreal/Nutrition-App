@@ -147,7 +147,7 @@ function App() {
       ) : (
         <div>
           <LogoutButton onLogout={handleLogout}/>
-          <PortionTable portions={portions}/>
+          <PortionTable portions={portions} date={selectedDate}/>
           <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch}/>
         </div>
       )}
