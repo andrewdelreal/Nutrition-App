@@ -1,10 +1,25 @@
 import './css/PortionForm.css';
+import { useState } from 'react';
 
-function PortionForm({ onDateChange }) {
+function PortionForm({ onDateChange, onFoodSearchChange }) {
+    const [foods, setFoods] = useState([]);
+
     function handleDateChange(event) {
         event.preventDefault();
         const newDate = event.target.value;
         onDateChange(newDate);
+    }
+
+    async function handleFoodSearchChange(event) {
+        event.preventDefault();
+        const search = event.target.value;
+        const results = await onFoodSearchChange(search);
+        setFoods(results);
+    }
+
+    function handleFoodSelect(food) {
+        document.getElementById('food-search').value = food.name;
+        setFoods([]);
     }
 
     return (
@@ -16,8 +31,14 @@ function PortionForm({ onDateChange }) {
 
             <div className="form-group">
                 <label htmlFor="food-search">Search Food</label>
-                <input type="text" id="food-search" name="food-search" autoComplete='off' required/>
-                <ul id="suggestions"></ul>
+                <input type="text" onChange={handleFoodSearchChange} id="food-search" name="food-search" autoComplete='off' required/>
+                <ul id="suggestions">
+                    {foods.map(food => (
+                        <li key={food.id} onClick={() => handleFoodSelect(food)}>
+                            {food.name}
+                        </li>
+                    ))}
+                </ul>
             </div>
 
             <div className="form-group">

@@ -101,7 +101,7 @@ function App() {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ username, date}),
+          body: JSON.stringify({ username, date }),
           credentials: 'include',
       });
 
@@ -116,6 +116,29 @@ function App() {
     }
   }
 
+  async function fetchFoodsBySearch(query) {
+    try {
+      const res = await fetch('http://localhost:54321/get-foods', {
+        method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ query }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        return data;
+      } else {
+        console.error('Failed to fetch foods');
+        return [];
+      }
+    } catch (err) {
+      console.error('Fetch error: ', err);
+      return [];
+    }
+  } 
+
   return (
     <div>
       <Header title='Nutrition Tracker' username={username}/>
@@ -125,7 +148,7 @@ function App() {
         <div>
           <LogoutButton onLogout={handleLogout}/>
           <PortionTable portions={portions}/>
-          <PortionForm onDateChange={setSelectedDate}/>
+          <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch}/>
         </div>
       )}
       
