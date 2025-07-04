@@ -1,0 +1,199 @@
+'use strict' 
+ 
+const express = require('express'); 
+const morgan = require('morgan'); 
+const bodyParser = require("body-parser"); 
+const DBAbstraction = require('./DBAbstraction');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+const path = require('path');
+
+const port = 54321;
+ 
+const app = express();
+const dbPath = path.join(__dirname, 'data', 'nutrition.sqlite')
+const db = new DBAbstraction(dbPath); 
+ 
+app.use(session({
+    secret: '1999482184074562-75124802130192',
+    resave: false,
+    saveUninitialized: true
+}));
+
+app.use(morgan('dev')); 
+app.use(bodyParser.urlencoded({ extended: false })); 
+app.use(bodyParser.json()); 
+
+app.use(express.static('public'));  
+
+// all the login stuff will change once i have the webcomponent
+app.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+        await db.registerUser(username, hashedPassword);
+        req.session.user = username;
+        res.json({username}); // will probably change this once i have web component
+    } catch (err) {
+        res.status(500).json({'error': 'Username might already exist.'});
+    }
+});
+
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    const user = await db.getUserByUsername(username);
+    if (user && await bcrypt.compare(password, user.hashedPassword)) {
+        req.session.user = username;
+        res.json({username}); // will probably change this once i have web component
+    } else {
+        res.status(401).json({'error': 'Invalid Credentials'});
+    }
+});
+
+app.post('/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.status(200).send("Logged out successfully.");    });
+});
+
+// may add a category or have a wait to search for foods
+app.post('/food', requireLogin, async (req, res) => {
+    const { name, calories, carbs, fat, protein, weight } = req.body;
+
+    try {
+        await db.insertFood(name, calories, carbs, fat, protein, weight);
+        res.json({'success': 'Food successfully added'});
+    } catch (err) {
+        res.status(500).json({'error': 'Failed to insert food into the database'});
+    }
+});
+
+app.post('/portion', requireLogin, async (req, res) => {
+    const { date, quantity, food, username} = req.body;
+    console.log(`${date}, ${quantity}, ${food}, ${username}`);
+
+    try {
+        await db.insertPortion(date, quantity, food, username);
+        res.json({'success': 'Portion successfully added'});
+    } catch (err) {
+        res.status(500).json({'error': 'Failed to insert portion into the database'});
+    }
+});
+
+app.post('/portion/get-portions', requireLogin, async (req, res) => {
+    const username = req.body.username;
+    const date = req.body.date;
+
+    const day = getDay(date);
+
+    try {
+        let portions = await db.getPortionsAndNutritionByUsernameAndDay(username, day);
+        
+        portions = formatDates(portions);
+        portions = adjustPortions(portions);
+
+        res.json(portions);
+    } catch (err) {
+        res.status(500).json({'error': 'Failed to get user portions'});
+    }
+});
+
+app.post('/get-foods', async (req, res) => {
+    const query = req.body.query;
+    try {
+        const foods = await db.getFoodsByQuery(query);
+        res.json(foods);
+    } catch (err) {
+        res.status(500).json({'error': 'Failed to get foods'});
+    }
+});
+
+app.post('/get-food-data', async (req, res) => {
+    const food = req.body.food;
+    try {
+        const foodData = await db.getFoodsDataByFood(food);
+        res.json(foodData);
+    } catch (err) {
+        res.status(500).json({'error': 'Failed to get food data'});
+    }
+});
+
+app.post('/get-summary', requireLogin, async (req, res) => {
+    const username = req.body.username;
+    const date = req.body.date;
+
+    const day = getDay(date);
+});
+
+app.post('/delete-portion', requireLogin, async (req, res) => {
+    console.log('here');
+    const portionId = req.body.portionId;
+
+    try {
+        await db.deletePortionByPortionId(portionId);
+        res.json({'success': 'Portion successfully deleted'});
+    } catch (err) {
+        res.status(500).json({'error': 'Failed to delete portion'});
+    }
+})
+
+app.get('/session', (req, res) => {
+    if (req.session && req.session.user) {
+        res.json({ username: req.session.user });
+    } else {
+        res.status(204).end(); 
+    }
+});
+
+db.init() 
+    .then(() => { 
+        app.listen(port, () => console.log(`The server is up and running at http://localhost:${port}/index.html`)); 
+    }) 
+    .catch(err => { 
+        console.log('Problem setting up the database'); 
+        console.log(err); 
+    });
+
+function getDay(date) {
+    return date.substring(0, date.indexOf("T"));
+}
+
+function formatDate(isoString) {
+    const date = new Date(isoString);
+    return new Intl.DateTimeFormat('en-US', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+    }).format(date);
+}
+
+function formatDates(dataArray, dateKeys = ['date']) {
+    for (let i = 0; i < dataArray.length; i++) {
+        for (let key of dateKeys) {
+            if (dataArray[i][key]) {
+                dataArray[i][key] = formatDate(dataArray[i][key]);
+            }
+        }
+    }
+
+    return dataArray;
+}
+
+function adjustPortions(portions) {
+    for (let i = 0; i < portions.length; i++) {
+        const multiplier = parseFloat(portions[i]['quantity'])
+        portions[i]['calories'] *=  multiplier;
+        portions[i]['carbs'] *=  multiplier;
+        portions[i]['fat'] *=  multiplier;
+        portions[i]['protein'] *=  multiplier;
+        portions[i]['weight'] *=  multiplier;
+    }
+
+    return portions;
+}
+
+function requireLogin(req, res, next) {
+    if (req.session && req.session.user) {
+        next(); 
+    } else {
+        res.json({'error': 'You must be logged in to access this feature'}); 
+    }
+}
