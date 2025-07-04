@@ -28,7 +28,7 @@ function PortionTable({ portions }) {
                 {tableRows}
             </tbody>
         </table>
-    )
+    );
 }
 
 export default PortionTable;

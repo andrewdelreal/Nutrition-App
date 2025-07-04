@@ -5,6 +5,7 @@ import AuthBox from './AuthBox';
 import Header from './Header';
 import LogoutButton from './LogoutButton';
 import PortionTable from './PortionTable';
+import PortionForm from './PortionForm';
 
 import { useState, useEffect } from 'react';
 
@@ -125,6 +126,7 @@ function App() {
         <div>
           <LogoutButton onLogout={handleLogout}/>
           <PortionTable portions={portions}/>
+          <PortionForm/>
         </div>
       )}
       

@@ -1,0 +1,51 @@
+.form-inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    font-family: 'Poppins', sans-serif;
+    animation: fadeIn 0.8s ease-out;
+    margin-bottom: 1rem;
+}
+
+.form-inline label {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+    color: #2b2d42;
+}
+
+.form-inline input {
+    padding: 0.6rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f7f7f7;
+    font-size: 1rem;
+    transition: border 0.3s ease;
+}
+
+.form-inline input:focus {
+    border-color: #ff6b6b;
+    outline: none;
+    background-color: #fff;
+}
+
+.form-inline button {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ff6b6b, #feca57);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.form-inline button:hover {
+    background: linear-gradient(90deg, #feca57, #ff6b6b);
+    transform: translateY(-2px);
+}
+
+.inline-form {
+    display: flex;
+    flex-direction: column;
+}
