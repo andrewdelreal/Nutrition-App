@@ -34,7 +34,7 @@ function PortionForm({ onDateChange, onFoodSearchChange }) {
                 <input type="text" onChange={handleFoodSearchChange} id="food-search" name="food-search" autoComplete='off' required/>
                 <ul id="suggestions">
                     {foods.map(food => (
-                        <li key={food.id} onClick={() => handleFoodSelect(food)}>
+                        <li key={food.foodId} onClick={() => handleFoodSelect(food)}>
                             {food.name}
                         </li>
                     ))}

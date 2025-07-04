@@ -157,7 +157,7 @@ class DBAbstraction {
 
     getFoodsByQuery(query) {
         const sql = `
-            SELECT name FROM Food
+            SELECT name, foodId FROM Food
             WHERE name LIKE ? COLLATE NOCASE;
         `;
 
