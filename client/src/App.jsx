@@ -2,6 +2,7 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import AuthBox from './AuthBox';
+import LogoutButton from './LogoutButton';
 import { useState, useEffect } from 'react';
 
 function App() {
@@ -25,7 +26,7 @@ function App() {
           console.error('Login failed');
         }
       } catch (err) {
-        console.error('Error loging in:', err);
+        console.error('Error logging in: ', err);
       }
     };
 
@@ -50,19 +51,38 @@ function App() {
           console.error('Login failed');
         }
       } catch (err) {
-        console.error('Error loging in:', err);
+        console.error('Error logging in: ', err);
       }
     };
 
     register();
   }
 
+  function handleLogout() {
+    const logout = async () => {
+      try {
+        const res = await fetch('http://localhost:54321/logout', {method: 'POST'});
+
+        if (res.ok) {
+          setUsername(null);
+        } else {
+          console.error('Logout failed');
+        }
+      } catch (err) {
+        console.error('Error logging out: ', err);
+      }
+    }
+
+    logout();
+  }
+
+
   return (
     <div>
       {!username ? (
         <AuthBox onLogin={handleLogin} onRegister={handleRegister}/>
       ) : (
-        <p>Please log in or register.</p>
+        <LogoutButton onLogout={handleLogout}/>
       )}
       
     </div>
