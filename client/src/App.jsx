@@ -12,7 +12,7 @@ import { useState, useEffect } from 'react';
 function App() {
   const [username, setUsername] = useState(null);
   const [portions, setPortions] = useState([]);
-  const [selectedDate, setSelectedDate] = useState('2025-05-07T20:46'); //useState(new Date().toISOString());
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
 
   function handleLogin(credentials) {
     const login = async () => {
@@ -88,6 +88,34 @@ function App() {
     logout();
   }
 
+  function handleAddPortion(newPortion) {
+    const addPortion = async () => {
+      try {
+        newPortion['username'] = username; 
+
+        const res = await fetch('http://localhost:54321/portion', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newPortion),
+          credentials: 'include',
+        });
+
+        if (res.ok) {
+          console.log('Succesfully inserted portion');
+          fetchPortionsByDate(newPortion.date);
+        } else {
+          console.error('Error adding portion:', res.statusText);
+        }
+      } catch (err) {
+        console.log('Error adding portion: ', err);
+      }
+    }
+
+    addPortion();
+  }
+
   useEffect(() => {
     if (username) {
       fetchPortionsByDate(selectedDate);
@@ -148,7 +176,7 @@ function App() {
         <div>
           <LogoutButton onLogout={handleLogout}/>
           <PortionTable portions={portions} date={selectedDate}/>
-          <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch}/>
+          <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch} onSubmit={handleAddPortion}/>
         </div>
       )}
       

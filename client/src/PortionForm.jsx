@@ -1,13 +1,25 @@
 import './css/PortionForm.css';
 import { useState } from 'react';
 
-function PortionForm({ onDateChange, onFoodSearchChange }) {
+function PortionForm({ onDateChange, onFoodSearchChange, onSubmit }) {
     const [foods, setFoods] = useState([]);
 
     function handleDateChange(event) {
         event.preventDefault();
         const newDate = event.target.value;
         onDateChange(newDate);
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        const newPortion = {
+            food: event.target.foodSearch.value,
+            date: event.target.date.value,
+            quantity: event.target.quantity.value
+        };
+
+        onSubmit(newPortion);
     }
 
     async function handleFoodSearchChange(event) {
@@ -18,20 +30,20 @@ function PortionForm({ onDateChange, onFoodSearchChange }) {
     }
 
     function handleFoodSelect(food) {
-        document.getElementById('food-search').value = food.name;
+        document.getElementById('foodSearch').value = food.name;
         setFoods([]);
     }
 
     return (
-        <form className="form-inline" id="newPortionForm">
+        <form className="form-inline" id="newPortionForm" onSubmit={handleSubmit}>
             <div className="form-group">
                 <label htmlFor="date">Date & Time</label>
                 <input type="datetime-local" onChange={handleDateChange} name="date" id="date" required/>
             </div>
 
             <div className="form-group">
-                <label htmlFor="food-search">Search Food</label>
-                <input type="text" onChange={handleFoodSearchChange} id="food-search" name="food-search" autoComplete='off' required/>
+                <label htmlFor="foodSearch">Search Food</label>
+                <input type="text" onChange={handleFoodSearchChange} id="foodSearch" name="foodSearch" autoComplete='off' required/>
                 <ul id="suggestions">
                     {foods.map(food => (
                         <li key={food.foodId} onClick={() => handleFoodSelect(food)}>
@@ -43,7 +55,7 @@ function PortionForm({ onDateChange, onFoodSearchChange }) {
 
             <div className="form-group">
                 <label htmlFor="quantity">Quantity</label>
-                <input type="number" id="quantity" name="quantity" min="0.01" required/>
+                <input type="number" id="quantity" name="quantity" min="0.01" step ="0.01" required/>
             </div>
         
             <div className="form-group">
