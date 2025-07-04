@@ -32,10 +32,35 @@ function App() {
     login();
   }
 
+  function handleRegister(credentials) {
+    const register = async () => {
+      try {
+        const res = await fetch('http://localhost:54321/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(credentials)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setUsername(data.username);
+        } else {
+          console.error('Login failed');
+        }
+      } catch (err) {
+        console.error('Error loging in:', err);
+      }
+    };
+
+    register();
+  }
+
   return (
     <div>
       {!username ? (
-        <AuthBox onLogin={handleLogin}/>
+        <AuthBox onLogin={handleLogin} onRegister={handleRegister}/>
       ) : (
         <p>Please log in or register.</p>
       )}

@@ -1,6 +1,6 @@
 import './css/AuthBox.css';
 
-function AuthBox({ onLogin }) {
+function AuthBox({ onLogin, onRegister }) {
     function handleLogin(event) {
         event.preventDefault();
         
@@ -13,6 +13,19 @@ function AuthBox({ onLogin }) {
 
         event.target.reset();
     } 
+
+    function handleRegister(event) {
+        event.preventDefault();
+
+        const credentials = {
+            username: event.target.newUsername.value,
+            password: event.target.newPassword.value
+        };
+
+        onRegister(credentials);
+
+        event.target.reset();
+    }
 
     return (
         <div className="card">
@@ -33,14 +46,14 @@ function AuthBox({ onLogin }) {
                 <hr />
 
                 <h5 className="card-title">Register</h5>
-                <form id="registerForm">
+                <form onSubmit={handleRegister} id="registerForm">
                     <div className="form-group">
                         <label>New Username</label>
-                        <input type="text" name="username" required />
+                        <input type="text" name="newUsername" required />
                     </div>
                     <div className="form-group">
                         <label>New Password</label>
-                        <input type="password" name="password" required />
+                        <input type="password" name="newPassword" required />
                     </div>
                     <button className="btn btn-success" type="submit">Register</button>
                 </form>
