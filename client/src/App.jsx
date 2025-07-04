@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 function App() {
   const [username, setUsername] = useState(null);
   const [portions, setPortions] = useState([]);
+  const [selectedDate, setSelectedDate] = useState('2025-05-07T20:46'); //useState(new Date().toISOString());
 
   function handleLogin(credentials) {
     const login = async () => {
@@ -20,7 +21,8 @@ function App() {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(credentials)
+          body: JSON.stringify(credentials),
+          credentials: 'include',
         });
 
         if (res.ok) {
@@ -45,7 +47,8 @@ function App() {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(credentials)
+          body: JSON.stringify(credentials),
+          credentials: 'include',
         });
 
         if (res.ok) {
@@ -69,6 +72,7 @@ function App() {
 
         if (res.ok) {
           setUsername(null);
+          setPortions([]);
         } else {
           console.error('Logout failed');
         }
@@ -78,6 +82,34 @@ function App() {
     }
 
     logout();
+  }
+
+  useEffect(() => {
+    if (username) {
+      fetchPortionsByDate(selectedDate);
+    }
+  }, [username, selectedDate]);
+
+  async function fetchPortionsByDate(date) {
+    try {
+      const res = await fetch('http://localhost:54321/portion/get-portions', {
+        method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, date}),
+          credentials: 'include',
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setPortions(data);
+      } else {
+        console.error('Failed to fetch portions');
+      }
+    } catch (err) {
+      console.error('Fetch error: ', err);
+    }
   }
 
 

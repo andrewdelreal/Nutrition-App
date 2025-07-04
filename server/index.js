@@ -18,13 +18,21 @@ const db = new DBAbstraction(dbPath);
 app.use(session({
     secret: '1999482184074562-75124802130192',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    cookie: {
+        secure: false, // only true with HTTPS
+        httpOnly: true,
+        sameSite: 'lax'
+    }
 }));
 
 app.use(morgan('dev')); 
 app.use(bodyParser.urlencoded({ extended: false })); 
 app.use(bodyParser.json()); 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 
 app.use(express.static('public'));  
 
@@ -34,7 +42,7 @@ app.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
         await db.registerUser(username, hashedPassword);
-        req.session.user = username;
+        req.session.username = username;
         res.json({username}); // will probably change this once i have web component
     } catch (err) {
         res.status(500).json({'error': 'Username might already exist.'});
@@ -45,7 +53,7 @@ app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const user = await db.getUserByUsername(username);
     if (user && await bcrypt.compare(password, user.hashedPassword)) {
-        req.session.user = username;
+        req.session.username = username;
         res.json({username}); // will probably change this once i have web component
     } else {
         res.status(401).json({'error': 'Invalid Credentials'});
@@ -53,8 +61,14 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-    req.session.destroy(() => {
-        res.status(200).send("Logged out successfully.");    });
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Logout failed' });
+        }
+        res.status(200).send("Logged out successfully.");
+        res.clearCookie('connect.sid'); // default session cookie name    
+        res.json({ message: 'Logged out' });
+    });
 });
 
 // may add a category or have a wait to search for foods
@@ -139,8 +153,8 @@ app.post('/delete-portion', requireLogin, async (req, res) => {
 })
 
 app.get('/session', (req, res) => {
-    if (req.session && req.session.user) {
-        res.json({ username: req.session.user });
+    if (req.session && req.session.username) {
+        res.json({ username: req.session.username });
     } else {
         res.status(204).end(); 
     }
@@ -193,7 +207,7 @@ function adjustPortions(portions) {
 }
 
 function requireLogin(req, res, next) {
-    if (req.session && req.session.user) {
+    if (req.session && req.session.username) {
         next(); 
     } else {
         res.json({'error': 'You must be logged in to access this feature'}); 

@@ -5,8 +5,6 @@ function LogoutButton({ onLogout }) {
         event.preventDefault();
 
         onLogout();
-
-        event.target.reset();
     }
 
     return (
