@@ -2,6 +2,7 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import AuthBox from './AuthBox';
+import Header from './Header';
 import LogoutButton from './LogoutButton';
 import { useState, useEffect } from 'react';
 
@@ -79,6 +80,7 @@ function App() {
 
   return (
     <div>
+      <Header title='Nutrition Tracker' username={username}/>
       {!username ? (
         <AuthBox onLogin={handleLogin} onRegister={handleRegister}/>
       ) : (

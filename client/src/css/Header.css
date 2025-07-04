@@ -1,0 +1,31 @@
+h1 {
+font-size: 3rem;
+margin-bottom: 0.5rem;
+color: #2b2d42;
+font-family: 'Poppins', sans-serif;
+letter-spacing: -1px;
+background: linear-gradient(90deg, #ff6b6b, #feca57);
+background-clip: text;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+animation: fadeIn 1s ease-out;
+}
+
+p {
+font-size: 1.2rem;
+color: #5e5e5e;
+font-family: 'Roboto', sans-serif;
+margin-top: 0;
+animation: slideUp 1s ease-out;
+}
+
+/* Simple animation effects */
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(-10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
