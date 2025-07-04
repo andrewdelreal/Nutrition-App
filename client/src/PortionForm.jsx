@@ -1,11 +1,17 @@
 import './css/PortionForm.css';
 
-function PortionForm() {
+function PortionForm({ onDateChange }) {
+    function handleDateChange(event) {
+        event.preventDefault();
+        const newDate = event.target.value;
+        onDateChange(newDate);
+    }
+
     return (
         <form className="form-inline" id="newPortionForm">
             <div className="form-group">
                 <label htmlFor="date">Date & Time</label>
-                <input type="datetime-local" name="date" id="date" required/>
+                <input type="datetime-local" onChange={handleDateChange} name="date" id="date" required/>
             </div>
 
             <div className="form-group">

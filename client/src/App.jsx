@@ -116,7 +116,6 @@ function App() {
     }
   }
 
-
   return (
     <div>
       <Header title='Nutrition Tracker' username={username}/>
@@ -126,7 +125,7 @@ function App() {
         <div>
           <LogoutButton onLogout={handleLogout}/>
           <PortionTable portions={portions}/>
-          <PortionForm/>
+          <PortionForm onDateChange={setSelectedDate}/>
         </div>
       )}
       
