@@ -29,6 +29,7 @@ function App() {
         if (res.ok) {
           const data = await res.json();
           setUsername(data.username);
+          setSelectedDate(new Date().toISOString());
         } else {
           console.error('Login failed');
         }
@@ -55,6 +56,7 @@ function App() {
         if (res.ok) {
           const data = await res.json();
           setUsername(data.username);
+          setSelectedDate(new Date().toISOString());
         } else {
           console.error('Login failed');
         }
