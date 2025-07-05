@@ -1,4 +1,4 @@
-import './css/AuthBox.module.css';
+import styles from './css/AuthBox.module.css';
 
 function AuthBox({ onLogin, onRegister }) {
     function handleLogin(event) {
@@ -28,15 +28,15 @@ function AuthBox({ onLogin, onRegister }) {
     }
 
     return (
-        <div className="card">
+        <div className={styles.card}>
             <div className="card-body">
-                <h5 className="card-title">Login</h5>
+                <h5 className={styles.cardTitle}>Login</h5>
                 <form onSubmit={handleLogin} id="loginForm">
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label>Username</label>
                         <input type="text" name="username" required />
                     </div>
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label>Password</label>
                         <input type="password" name="password" required />
                     </div>
@@ -45,13 +45,13 @@ function AuthBox({ onLogin, onRegister }) {
 
                 <hr />
 
-                <h5 className="card-title">Register</h5>
+                <h5 className={styles.cardTitle}>Register</h5>
                 <form onSubmit={handleRegister} id="registerForm">
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label>New Username</label>
                         <input type="text" name="newUsername" required />
                     </div>
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label>New Password</label>
                         <input type="password" name="newPassword" required />
                     </div>
