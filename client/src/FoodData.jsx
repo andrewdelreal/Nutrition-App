@@ -1,20 +1,17 @@
 import './css/FoodData.module.css';
 
 function FoodData({ foodData }) {
-    const tableRows = foodData.map(food => {
-        return (
-            <tr key={food.foodId}>
-                <td>{food.calories.toFixed(1)}</td>
-                <td>{food.carbs.toFixed(1)}</td>
-                <td>{food.fat.toFixed(1)}</td>
-                <td>{food.protein.toFixed(1)}</td>
-                <td>{food.weight.toFixed(1)}</td>
+    const tableRow = 
+        (
+            <tr key={foodData.foodId}>
+                <td>{foodData.calories.toFixed(1)}</td>
+                <td>{foodData.carbs.toFixed(1)}</td>
+                <td>{foodData.fat.toFixed(1)}</td>
+                <td>{foodData.protein.toFixed(1)}</td>
+                <td>{foodData.weight.toFixed(1)}</td>
             </tr>
-        )
-    });
-            
-      
-
+        );
+    
         return (
             <div>
             <h3>Nutritional Values per Portion of {foodData.name}</h3>
@@ -24,7 +21,7 @@ function FoodData({ foodData }) {
                         <th>Protein</th><th>Weight</th></tr>
                     </thead>
                     <tbody>
-                        {tableRows}
+                        {tableRow}
                     </tbody>
                 </table>
             </div>

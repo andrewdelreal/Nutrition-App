@@ -172,7 +172,7 @@ class DBAbstraction {
 
     getFoodsDataByFood(food) {
         const sql = `
-            SELECT foodId, calories, carbs, fat, protein, weight FROM Food
+            SELECT name, foodId, calories, carbs, fat, protein, weight FROM Food
             WHERE name = ? COLLATE NOCASE;
         `;
 

@@ -148,6 +148,33 @@ function App() {
     deletePortion();
   }
 
+  function handleFoodSelect(food) {
+    const getFoodData = async () => {
+      try {
+        const res = await fetch('http://localhost:54321/get-food-data', {
+          method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ food }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setFoodData(data);
+        } else {
+          console.error('Failed to fetch food data');
+          setFoodData([]);
+        }
+      } catch (err) {
+        console.error('Fetch error: ', err);
+        setFoodData([]);
+      }
+    }
+
+    getFoodData();
+  }
+
   useEffect(() => {
     if (username) {
       fetchPortionsByDate(selectedDate);
@@ -208,7 +235,7 @@ function App() {
         <div>
           <LogoutButton onLogout={handleLogout}/>
           <PortionTable portions={portions} date={selectedDate} onDelete={handlePortionDelete}/>
-          <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch} onSubmit={handleAddPortion}/>
+          <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch} onSubmit={handleAddPortion} onFoodSelect={handleFoodSelect}/>
 
           {foodData.length != 0 ? (
             <FoodData foodData={foodData}/>

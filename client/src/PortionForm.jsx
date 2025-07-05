@@ -1,7 +1,7 @@
 import styles from './css/PortionForm.module.css';
 import { useState } from 'react';
 
-function PortionForm({ onDateChange, onFoodSearchChange, onSubmit }) {
+function PortionForm({ onDateChange, onFoodSearchChange, onSubmit, onFoodSelect }) {
     const [foods, setFoods] = useState([]);
 
     function handleDateChange(event) {
@@ -32,6 +32,7 @@ function PortionForm({ onDateChange, onFoodSearchChange, onSubmit }) {
     function handleFoodSelect(food) {
         document.getElementById('foodSearch').value = food.name;
         setFoods([]);
+        onFoodSelect(food.name);
     }
 
     return (
