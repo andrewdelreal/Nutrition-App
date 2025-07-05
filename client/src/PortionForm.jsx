@@ -1,4 +1,4 @@
-import './css/PortionForm.css';
+import styles from './css/PortionForm.module.css';
 import { useState } from 'react';
 
 function PortionForm({ onDateChange, onFoodSearchChange, onSubmit }) {
@@ -35,7 +35,7 @@ function PortionForm({ onDateChange, onFoodSearchChange, onSubmit }) {
     }
 
     return (
-        <form className="form-inline" id="newPortionForm" onSubmit={handleSubmit}>
+        <form className={styles.formInline} id="newPortionForm" onSubmit={handleSubmit}>
             <div className="form-group">
                 <label htmlFor="date">Date & Time</label>
                 <input type="datetime-local" onChange={handleDateChange} name="date" id="date" required/>

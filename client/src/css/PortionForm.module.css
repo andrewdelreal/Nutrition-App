@@ -1,4 +1,4 @@
-.form-inline {
+.formInline {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -8,13 +8,13 @@
     margin-bottom: 1rem;
 }
 
-.form-inline label {
+.formInline label {
     margin-right: 0.5rem;
     font-size: 1rem;
     color: #2b2d42;
 }
 
-.form-inline input {
+.formInline input {
     padding: 0.6rem 1rem;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -23,13 +23,13 @@
     transition: border 0.3s ease;
 }
 
-.form-inline input:focus {
+.formInline input:focus {
     border-color: #ff6b6b;
     outline: none;
     background-color: #fff;
 }
 
-.form-inline button {
+.formInline button {
     padding: 0.6rem 1.2rem;
     border: none;
     border-radius: 8px;
@@ -40,12 +40,7 @@
     transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.form-inline button:hover {
+.formInline button:hover {
     background: linear-gradient(90deg, #feca57, #ff6b6b);
     transform: translateY(-2px);
-}
-
-.inline-form {
-    display: flex;
-    flex-direction: column;
 }

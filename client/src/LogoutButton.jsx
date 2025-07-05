@@ -1,4 +1,4 @@
-import './css/Logout.css';
+import './css/Logout.module.css';
 
 function LogoutButton({ onLogout }) {
     function handleLogout(event) {
@@ -8,7 +8,7 @@ function LogoutButton({ onLogout }) {
     }
 
     return (
-        <button onClick={handleLogout} id="logoutBtn" className="btn btn-secondary">Logout</button>
+        <button onClick={handleLogout} id="logoutBtn">Logout</button>
     );
 }
 

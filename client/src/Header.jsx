@@ -1,4 +1,4 @@
-import './css/Header.css';
+import './css/Header.module.css';
 
 function Header({ title, username }) {
     return (

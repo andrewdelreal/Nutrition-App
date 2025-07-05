@@ -1,4 +1,4 @@
-import './css/PortionTable.css';
+import './css/PortionTable.module.css';
 
 function PortionTable({ portions, date }) {
     function formatDate(isoString) {

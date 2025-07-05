@@ -1,4 +1,4 @@
-import './css/AuthBox.css';
+import './css/AuthBox.module.css';
 
 function AuthBox({ onLogin, onRegister }) {
     function handleLogin(event) {
@@ -40,7 +40,7 @@ function AuthBox({ onLogin, onRegister }) {
                         <label>Password</label>
                         <input type="password" name="password" required />
                     </div>
-                    <button className="btn btn-primary" type="submit">Login</button>
+                    <button type="submit">Login</button>
                 </form>
 
                 <hr />
@@ -55,7 +55,7 @@ function AuthBox({ onLogin, onRegister }) {
                         <label>New Password</label>
                         <input type="password" name="newPassword" required />
                     </div>
-                    <button className="btn btn-success" type="submit">Register</button>
+                    <button type="submit">Register</button>
                 </form>
             </div>
         </div>
