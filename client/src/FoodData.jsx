@@ -14,7 +14,7 @@ function FoodData({ foodData }) {
     
         return (
             <div>
-            <h3>Nutritional Values per Portion of {foodData.name}</h3>
+                <h3>Nutritional Values per Portion of {foodData.name}</h3>
                 <table id="portionTable">
                     <thead>
                         <tr><th>Calories</th><th>Carbs</th><th>Fat</th>
