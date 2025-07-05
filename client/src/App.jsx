@@ -116,6 +116,32 @@ function App() {
     addPortion();
   }
 
+  function handlePortionDelete(portionId) {
+    const deletePortion = async () => {
+      try {
+        const res = await fetch('http://localhost:54321/delete-portion', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({portionId}),
+          credentials: 'include',
+        });
+
+        if (res.ok) {
+          console.log('Succesfully deleted portion');
+          fetchPortionsByDate(selectedDate);
+        } else {
+          console.error('Error deleting portion:', res.statusText);
+        }
+      } catch (err) {
+        console.log('Error deleting portion: ', err);
+      }
+    }
+
+    deletePortion();
+  }
+
   useEffect(() => {
     if (username) {
       fetchPortionsByDate(selectedDate);
@@ -175,7 +201,7 @@ function App() {
       ) : (
         <div>
           <LogoutButton onLogout={handleLogout}/>
-          <PortionTable portions={portions} date={selectedDate}/>
+          <PortionTable portions={portions} date={selectedDate} onDelete={handlePortionDelete}/>
           <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch} onSubmit={handleAddPortion}/>
         </div>
       )}

@@ -1,6 +1,6 @@
 import './css/PortionTable.module.css';
 
-function PortionTable({ portions, date }) {
+function PortionTable({ portions, date, onDelete }) {
     function formatDate(isoString) {
         const date = new Date(isoString);
         let formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -9,6 +9,10 @@ function PortionTable({ portions, date }) {
         }).format(date);
 
         return formattedDate.substring(0, formattedDate.indexOf(',', 8));
+    }
+
+    function handleDelete(portionId) {
+        onDelete(portionId);
     }
 
     const tableRows = portions.map(portion => {
@@ -22,7 +26,7 @@ function PortionTable({ portions, date }) {
                 <td>{portion.protein.toFixed(1)}</td>
                 <td>{portion.weight.toFixed(1)}</td>
                 <td>
-                    <button data-portion-id={portion.portionId}>Delete</button>
+                    <button onClick={() => handleDelete(portion.portionId)}>Delete</button>
                 </td>
             </tr>
         )
