@@ -158,7 +158,8 @@ class DBAbstraction {
     getFoodsByQuery(query) {
         const sql = `
             SELECT name, foodId FROM Food
-            WHERE name LIKE ? COLLATE NOCASE;
+            WHERE name LIKE ? COLLATE NOCASE
+            LIMIT 10;
         `;
 
         return new Promise((resolve, reject) => {
