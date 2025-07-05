@@ -6,6 +6,7 @@ import Header from './Header';
 import LogoutButton from './LogoutButton';
 import PortionTable from './PortionTable';
 import PortionForm from './PortionForm';
+import FoodData from './FoodData';
 
 import { useState, useEffect } from 'react';
 
@@ -13,6 +14,7 @@ function App() {
   const [username, setUsername] = useState(null);
   const [portions, setPortions] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
+  const [foodData, setFoodData] = useState([]);
 
   function handleLogin(credentials) {
     const login = async () => {
@@ -30,6 +32,7 @@ function App() {
           const data = await res.json();
           setUsername(data.username);
           setSelectedDate(new Date().toISOString());
+          setFoodData([]);
         } else {
           console.error('Login failed');
         }
@@ -57,6 +60,7 @@ function App() {
           const data = await res.json();
           setUsername(data.username);
           setSelectedDate(new Date().toISOString());
+          setFoodData([]);
         } else {
           console.error('Login failed');
         }
@@ -205,6 +209,10 @@ function App() {
           <LogoutButton onLogout={handleLogout}/>
           <PortionTable portions={portions} date={selectedDate} onDelete={handlePortionDelete}/>
           <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch} onSubmit={handleAddPortion}/>
+
+          {foodData.length != 0 ? (
+            <FoodData foodData={foodData}/>
+          ) : (<></>)}
         </div>
       )}
       
