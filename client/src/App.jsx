@@ -1,12 +1,10 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
 import AuthBox from './AuthBox';
 import Header from './Header';
 import LogoutButton from './LogoutButton';
 import PortionTable from './PortionTable';
 import PortionForm from './PortionForm';
 import FoodData from './FoodData';
+import NutritionSummary from './NutritionSummary';
 
 import { useState, useEffect } from 'react';
 
@@ -15,6 +13,7 @@ function App() {
   const [portions, setPortions] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
   const [foodData, setFoodData] = useState([]);
+  const [summaryData, setSummaryData] = useState([]);
 
   function handleLogin(credentials) {
     const login = async () => {
@@ -195,6 +194,22 @@ function App() {
       if (res.ok) {
         const data = await res.json();
         setPortions(data);
+
+        if (data.length === 0) {
+          setSummaryData([]);
+        } else {
+          let summary = data.reduce((acc, item) => {
+            acc.calories += item.calories || 0;
+            acc.carbs += item.carbs || 0;
+            acc.fat += item.fat || 0;
+            acc.protein += item.protein || 0;
+            acc.weight += item.weight || 0;
+            return acc;
+          });
+
+          summary['date'] = selectedDate;
+          setSummaryData(summary);
+        }
       } else {
         console.error('Failed to fetch portions');
       }
@@ -237,8 +252,12 @@ function App() {
           <PortionTable portions={portions} date={selectedDate} onDelete={handlePortionDelete}/>
           <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch} onSubmit={handleAddPortion} onFoodSelect={handleFoodSelect}/>
 
-          {foodData.length != 0 ? (
+          {foodData.length !== 0 ? (
             <FoodData foodData={foodData}/>
+          ) : (<></>)}
+
+          {summaryData.length !== 0 ? (
+            <NutritionSummary summary={summaryData}/>
           ) : (<></>)}
         </div>
       )}
