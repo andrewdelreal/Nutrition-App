@@ -5,6 +5,7 @@ import PortionTable from './PortionTable';
 import PortionForm from './PortionForm';
 import FoodData from './FoodData';
 import NutritionSummary from './NutritionSummary';
+import FoodForm from './FoodForm';
 
 import { useState, useEffect } from 'react';
 
@@ -251,6 +252,7 @@ function App() {
           <LogoutButton onLogout={handleLogout}/>
           <PortionTable portions={portions} date={selectedDate} onDelete={handlePortionDelete}/>
           <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch} onSubmit={handleAddPortion} onFoodSelect={handleFoodSelect}/>
+          <FoodForm/>
 
           {foodData.length !== 0 ? (
             <FoodData foodData={foodData}/>

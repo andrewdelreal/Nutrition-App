@@ -37,12 +37,12 @@ function PortionForm({ onDateChange, onFoodSearchChange, onSubmit, onFoodSelect 
 
     return (
         <form className={styles.formInline} id="newPortionForm" onSubmit={handleSubmit}>
-            <div className="form-group">
+            <div className={styles.formGroup}>
                 <label htmlFor="date">Date & Time</label>
                 <input type="datetime-local" onChange={handleDateChange} name="date" id="date" required/>
             </div>
 
-            <div className="form-group">
+            <div className={styles.formGroup}>
                 <label htmlFor="foodSearch">Search Food</label>
                 <input type="text" onChange={handleFoodSearchChange} id="foodSearch" name="foodSearch" autoComplete='off' required/>
                 <ul id="suggestions">
@@ -54,12 +54,12 @@ function PortionForm({ onDateChange, onFoodSearchChange, onSubmit, onFoodSelect 
                 </ul>
             </div>
 
-            <div className="form-group">
+            <div className={styles.formGroup}>
                 <label htmlFor="quantity">Quantity</label>
                 <input type="number" id="quantity" name="quantity" min="0.01" step ="0.01" required/>
             </div>
         
-            <div className="form-group">
+            <div className={styles.formGroup}>
                 <button type="submit" id="submitButton">Add Portion</button>
             </div>
         </form>
