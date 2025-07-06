@@ -1,38 +1,54 @@
 import styles from './css/FoodForm.module.css';
 
 function FoodForm({ onSubmit }) {
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        const newFood = {
+            name: event.target.name.value,
+            calories: event.target.calories.value,
+            carbs: event.target.carbs.value,
+            fat: event.target.fat.value,
+            protein: event.target.protein.value,
+            weight: event.target.weight.value
+        };
+
+        onSubmit(newFood);
+        event.target.reset();
+    }
+
     return (
         <div>
         <h3>Add Food</h3>
         
-        <form class={styles.formInline} id="newFoodForm">
-            <div class={styles.formGroup}>
-                <label for="name">Food Name</label>
+        <form className={styles.formInline} id="newFoodForm" onSubmit={handleSubmit}>
+            <div className={styles.formGroup}>
+                <label htmlFor="name">Food Name</label>
                 <input type="text" id="name" name="name" required/>
             </div>
 
-            <div class={styles.formGroup}>
-                <label for="calories">Calories</label>
+            <div className={styles.formGroup}>
+                <label htmlFor="calories">Calories</label>
                 <input type="number" id="calories" name="calories" min="0" required/>
             </div>
 
-            <div class={styles.formGroup}>
-                <label for="carbs">Carbs</label>
+            <div className={styles.formGroup}>
+                <label htmlFor="carbs">Carbs</label>
                 <input type="number" id="carbs" name="carbs" min="0" required/>
             </div>
 
-            <div class={styles.formGroup}>
-                <label for="fat">Fat</label>
+            <div className={styles.formGroup}>
+                <label htmlFor="fat">Fat</label>
                 <input type="number" id="fat" name="fat" min="0" required/>
             </div>
 
-            <div class={styles.formGroup}>
-                <label for="protein">Protein</label>
+            <div className={styles.formGroup}>
+                <label htmlFor="protein">Protein</label>
                 <input type="number" id="protein" name="protein" min="0" required/>
             </div>
 
-            <div class={styles.formGroup}>
-                <label for="weight">Weight</label>
+            <div className={styles.formGroup}>
+                <label htmlFor="weight">Weight</label>
                 <input type="number" id="weight" name="weight" min="0" required/>
             </div>
 

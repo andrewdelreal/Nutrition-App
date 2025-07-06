@@ -102,8 +102,7 @@ app.post('/portion/get-portions', requireLogin, async (req, res) => {
 
     try {
         let portions = await db.getPortionsAndNutritionByUsernameAndDay(username, day);
-        
-        portions = formatDates(portions);
+
         portions = adjustPortions(portions);
 
         res.json(portions);
@@ -170,26 +169,6 @@ db.init()
 
 function getDay(date) {
     return date.substring(0, date.indexOf("T"));
-}
-
-function formatDate(isoString) {
-    const date = new Date(isoString);
-    return new Intl.DateTimeFormat('en-US', {
-        dateStyle: 'medium',
-        timeStyle: 'short'
-    }).format(date);
-}
-
-function formatDates(dataArray, dateKeys = ['date']) {
-    for (let i = 0; i < dataArray.length; i++) {
-        for (let key of dateKeys) {
-            if (dataArray[i][key]) {
-                dataArray[i][key] = formatDate(dataArray[i][key]);
-            }
-        }
-    }
-
-    return dataArray;
 }
 
 function adjustPortions(portions) {

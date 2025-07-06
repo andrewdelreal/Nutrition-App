@@ -8,6 +8,7 @@ import NutritionSummary from './NutritionSummary';
 import FoodForm from './FoodForm';
 
 import { useState, useEffect } from 'react';
+import { format } from 'date-fns';
 
 function App() {
   const [username, setUsername] = useState(null);
@@ -122,6 +123,31 @@ function App() {
     addPortion();
   }
 
+  function handleAddFood(newFood) {
+    const addFood = async () => {
+      try {
+        const res = await fetch('http://localhost:54321/food', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newFood),
+          credentials: 'include',
+        });
+
+        if (res.ok) {
+          console.log('Successfully added food');
+        } else {
+          console.log('Error adding food: ');
+        }
+      } catch (err) {
+        console.log('Error adding food: ', err);
+      }
+    }
+
+    addFood();
+  }
+
   function handlePortionDelete(portionId) {
     const deletePortion = async () => {
       try {
@@ -194,7 +220,9 @@ function App() {
 
       if (res.ok) {
         const data = await res.json();
-        setPortions(data);
+        
+        const formattedData = formatDates(data);
+        setPortions(formattedData);
 
         if (data.length === 0) {
           setSummaryData([]);
@@ -252,7 +280,7 @@ function App() {
           <LogoutButton onLogout={handleLogout}/>
           <PortionTable portions={portions} date={selectedDate} onDelete={handlePortionDelete}/>
           <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch} onSubmit={handleAddPortion} onFoodSelect={handleFoodSelect}/>
-          <FoodForm/>
+          <FoodForm onSubmit={handleAddFood}/>
 
           {foodData.length !== 0 ? (
             <FoodData foodData={foodData}/>
@@ -266,6 +294,13 @@ function App() {
       
     </div>
   );
+
+  function formatDates(portions) {
+    return portions.map(portion => ({
+      ...portion,
+      date: format(new Date(portion.date), 'MMM dd, yyyy hh:mm a')  // 👍 Ensures string
+    }));
+  }
 }
 
 export default App;
