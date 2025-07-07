@@ -5,9 +5,10 @@ button {
     border-radius: 8px;
     background: linear-gradient(90deg, #ff6b6b, #feca57);
     color: white;
-    font-size: 1rem;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s ease;
+    font-family: 'Roboto', sans-serif;
 }
 
 button:hover {

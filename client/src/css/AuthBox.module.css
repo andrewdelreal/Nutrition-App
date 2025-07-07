@@ -1,5 +1,5 @@
 .card {
-    font-family: 'Poppins', sans-serif;
+    /* font-family: 'Roboto', sans-serif; */
     align-items: center;
     gap: 1rem;
     border: 1px solid #ccc;
@@ -10,7 +10,7 @@
 
 .cardTitle {
     margin-right: 0.5rem;
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: #2b2d42;
 }
 
@@ -24,7 +24,7 @@ input {
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #f7f7f7;
-    font-size: 1rem;
+    font-size: 1.2rem;
     transition: border 0.3s ease;
     box-sizing: border-box;
 }
@@ -42,7 +42,7 @@ button {
     border-radius: 8px;
     background: linear-gradient(90deg, #ff6b6b, #feca57);
     color: white;
-    font-size: 1rem;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s ease;
 }
