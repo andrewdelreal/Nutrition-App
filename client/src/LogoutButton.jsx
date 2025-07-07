@@ -4,10 +4,10 @@ function LogoutButton({ onLogout }) {
     function handleLogout(event) {
         event.preventDefault();
 
-        onLogout();
+        onLogout();     // attempt to logout
     }
 
-    return (
+    return (    // button html
         <button onClick={handleLogout} id="logoutBtn">Logout</button>
     );
 }

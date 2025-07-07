@@ -1,22 +1,17 @@
 import './css/PortionTable.module.css';
+import { format } from 'date-fns';
 
 function PortionTable({ portions, date, onDelete }) {
-    function formatDate(isoString) {
-        const date = new Date(isoString);
-        let formattedDate = new Intl.DateTimeFormat('en-US', {
-            dateStyle: 'medium',
-            timeStyle: 'short'
-        }).format(date);
-
-        return formattedDate.substring(0, formattedDate.indexOf(',', 8));
+    function formatDate(isoString) {    // Format from iso to readable date
+        return format(new Date(isoString), 'MMM dd, yyyy')
     }
 
     function handleDelete(portionId) {
-        onDelete(portionId);
+        onDelete(portionId);    // attempt to delete the portion row
     }
 
     const tableRows = portions.map(portion => {
-        return (
+        return (    // Create all the portion rows for the portions passed in
             <tr key={portion.portionId}>
                 <td>{portion.date}</td>
                 <td>{portion.name}</td>
@@ -32,13 +27,13 @@ function PortionTable({ portions, date, onDelete }) {
         )
     });
 
-    return (
+    return (    // Portion table html
         <div>
             <h2>Portions for {formatDate(date)}</h2>
             <table id="portionTable">
                 <thead>
-                    <tr><th>Date</th><th>Name</th><th>Calories</th><th>Carbs</th><th>Fat</th>
-                    <th>Protein</th><th>Weight</th><th>Delete</th></tr>
+                    <tr><th>Date</th><th>Name</th><th>Calories</th><th>Carbs (g)</th><th>Fat (g)</th>
+                    <th>Protein (g)</th><th>Weight (g)</th><th>Delete</th></tr>
                 </thead>
                 <tbody>
                     {tableRows}
@@ -47,7 +42,5 @@ function PortionTable({ portions, date, onDelete }) {
         </div>
     );
 }
-
-
 
 export default PortionTable;

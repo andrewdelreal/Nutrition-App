@@ -1,7 +1,7 @@
 import './css/Header.module.css';
 
 function Header({ title, username }) {
-    return (
+    return (    // header html
         <div>
             <h1>{title}</h1>
             <p>Welcome {username}</p>

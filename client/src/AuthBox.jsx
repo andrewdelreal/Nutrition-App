@@ -4,12 +4,12 @@ function AuthBox({ onLogin, onRegister }) {
     function handleLogin(event) {
         event.preventDefault();
         
-        const credentials = {
+        const credentials = {       // get user and password
             username: event.target.username.value,
             password: event.target.password.value
         };
 
-        onLogin(credentials);
+        onLogin(credentials);       // attempt to login
 
         event.target.reset();
     } 
@@ -17,18 +17,19 @@ function AuthBox({ onLogin, onRegister }) {
     function handleRegister(event) {
         event.preventDefault();
 
-        const credentials = {
+        const credentials = {       // get user and password
             username: event.target.newUsername.value,
             password: event.target.newPassword.value
         };
 
-        onRegister(credentials);
+        onRegister(credentials);    // attempt to login
 
         event.target.reset();
     }
 
     return (
-        <div className={styles.card}>
+        // AuthBox html
+        <div className={styles.card}> 
             <div className="card-body">
                 <h5 className={styles.cardTitle}>Login</h5>
                 <form onSubmit={handleLogin} id="loginForm">
