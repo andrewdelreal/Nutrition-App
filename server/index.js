@@ -106,11 +106,10 @@ app.post('/personal-food', requireLogin, async (req, res) => {
 });
 
 app.post('/portion', requireLogin, async (req, res) => {
-    const { date, quantity, food, username} = req.body;
-    console.log(`${date}, ${quantity}, ${food}, ${username}`);
+    const { date, quantity, food, source, username} = req.body;
 
     try {
-        await db.insertPortion(date, quantity, food, username);
+        await db.insertPortion(date, quantity, food, source, username);
         res.json({'success': 'Portion successfully added'});
     } catch (err) {
         res.status(500).json({'error': 'Failed to insert portion into the database'});

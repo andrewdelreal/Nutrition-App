@@ -129,8 +129,21 @@ class DBAbstraction {
         });
     }
 
-    insertPortion(date, quantity, food, username) {
-        const sql = `
+    insertPortion(date, quantity, food, source, username) {
+        let sql = ``;
+
+        if (source === 'personal') {
+            sql = `
+            WITH foodId AS (
+                SELECT personalFoodId AS foodId FROM PersonalFood
+                WHERE name = ?
+            ), userId AS (
+                SELECT userId FROM User
+                WHERE username = ?
+            )
+            `;
+        } else if (source === 'global') {
+            sql = `
             WITH foodId AS (
                 SELECT foodId FROM Food
                 WHERE name = ?
@@ -138,19 +151,23 @@ class DBAbstraction {
                 SELECT userId FROM User
                 WHERE username = ?
             )
+            `;
+        }
 
-
-            INSERT INTO Portion (date, quantity, foodId, userId)
+        sql += `
+            INSERT INTO Portion (date, quantity, foodId, userId, source)
             SELECT 
                 ?, 
                 ?, 
                 foodId.foodId, 
-                userId.userId
+                userId.userId,
+                ?
             FROM foodId, userId;
         `;
+        console.log(sql);
 
         return new Promise((resolve, reject) => {
-            this.db.run(sql, [food, username, date, quantity], (err) => {
+            this.db.run(sql, [food, username, date, quantity, source], (err) => {
                 if (err) reject(err);
                 else resolve();
             });
@@ -161,22 +178,19 @@ class DBAbstraction {
         const sql = `
         SELECT 
             Portion.portionId,
-            Food.name,
-            Food.calories,
-            Food.carbs,
-            Food.fat,   
-            Food.protein,
-            Food.weight,
+            COALESCE(PersonalFood.name, Food.name) AS name,
+            COALESCE(PersonalFood.calories, Food.calories) AS calories,
+            COALESCE(PersonalFood.carbs, Food.carbs) AS carbs,
+            COALESCE(PersonalFood.fat, Food.fat) AS fat,
+            COALESCE(PersonalFood.protein, Food.protein) AS protein,
+            COALESCE(PersonalFood.weight, Food.weight) AS weight,
             Portion.date,
             Portion.quantity
         FROM Portion
-        JOIN Food on Portion.foodId = Food.foodId
-        JOIN User on Portion.userId = User.userId
-        WHERE User.userId = (
-            SELECT userId
-            FROM User
-            WHERE username = ?
-        )
+        JOIN User ON Portion.userId = User.userId
+        LEFT JOIN Food ON Portion.foodId = Food.foodId AND Portion.source = 'global'
+        LEFT JOIN PersonalFood ON Portion.foodId = PersonalFood.personalFoodId AND Portion.source = 'personal'
+        WHERE User.username = ?
         AND Portion.date LIKE ?
         ORDER BY Portion.date ASC;
         `;

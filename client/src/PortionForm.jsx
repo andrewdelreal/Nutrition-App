@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 function PortionForm({ onDateChange, onFoodSearchChange, onSubmit, onFoodSelect }) {
     const [foods, setFoods] = useState([]);
+    const [foodSource, setFoodSource] = useState('');
 
     function handleDateChange(event) {
         event.preventDefault();
@@ -16,7 +17,8 @@ function PortionForm({ onDateChange, onFoodSearchChange, onSubmit, onFoodSelect 
         const newPortion = {    // create new portion object
             food: event.target.foodSearch.value,
             date: event.target.date.value,
-            quantity: event.target.quantity.value
+            quantity: event.target.quantity.value,
+            source: foodSource
         };
 
         onSubmit(newPortion);   // attempt to add portion
@@ -34,8 +36,7 @@ function PortionForm({ onDateChange, onFoodSearchChange, onSubmit, onFoodSelect 
     function handleFoodSelect(food) {
         document.getElementById('foodSearch').value = food.name;  // If a food is selected from the search list, set the form value
         setFoods([]);   // clear the search list
-        // Also will probably to update the food data;
-        // maybe make this a private food variable thing
+        setFoodSource(food.source);
         onFoodSelect(food);  // send food name to update FoodData
     }
 
