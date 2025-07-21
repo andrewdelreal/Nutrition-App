@@ -49,6 +49,18 @@ class DBAbstraction {
                 FOREIGN KEY("foodId") REFERENCES "Food"("foodId"),
                 FOREIGN KEY("userId") REFERENCES "User"("userId")
             );
+
+            CREATE TABLE IF NOT EXISTS "PersonalFood" (
+                "personalFoodId" INTEGER PRIMARY KEY,
+                "name" TEXT UNIQUE,
+                "calories" REAL,
+                "carbs" REAL,
+                "fat" REAL,
+                "protein" REAL,
+                "weight" REAL,
+                "userId" INTEGER NOT NULL, 
+                FOREIGN KEY("userId") REFERENCES "User"("userId")
+            );
         `; 
  
         return new Promise((resolve, reject) => { 
