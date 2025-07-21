@@ -188,7 +188,8 @@ function App() {
                     headers: {
                     'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ food }),
+                    body: JSON.stringify(food),
+                    credentials: 'include',
                 });
 
                 if (res.ok) {
@@ -268,7 +269,6 @@ function App() {
 
             if (res.ok) {   // If able to get foods
                 const data = await res.json();
-                console.log(data);
                 return data;
             } else {
                 console.error('Failed to fetch foods');

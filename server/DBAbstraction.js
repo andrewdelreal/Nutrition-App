@@ -216,14 +216,27 @@ class DBAbstraction {
         });
     }
 
-    getFoodsDataByFood(food) {
-        const sql = `
-            SELECT name, foodId, calories, carbs, fat, protein, weight FROM Food
-            WHERE name = ? COLLATE NOCASE;
-        `;
+    getFoodsDataByFood(foodId, source, userId) {
+        let sql = ``;
+        let params = [];
+
+        if (source === 'personal') {
+            sql = `
+                SELECT name, personalFoodId, calories, carbs, fat, protein, weight FROM PersonalFood
+                WHERE personalFoodId = ?
+                AND userId = ?;
+            `;
+            params = [foodId, userId];
+        } else if (source === 'global') {
+            sql = `
+                SELECT name, foodId, calories, carbs, fat, protein, weight FROM Food
+                WHERE foodId = ?;
+            `;
+            params = [foodId];
+        }
 
         return new Promise((resolve, reject) => {
-            this.db.get(sql, [food], (err, row) => {
+            this.db.get(sql, params, (err, row) => {
                 if (err) reject(err);
                 else resolve(row);
             });

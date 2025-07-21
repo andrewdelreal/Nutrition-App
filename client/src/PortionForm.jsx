@@ -34,7 +34,9 @@ function PortionForm({ onDateChange, onFoodSearchChange, onSubmit, onFoodSelect 
     function handleFoodSelect(food) {
         document.getElementById('foodSearch').value = food.name;  // If a food is selected from the search list, set the form value
         setFoods([]);   // clear the search list
-        onFoodSelect(food.name);  // send food name to update FoodData
+        // Also will probably to update the food data;
+        // maybe make this a private food variable thing
+        onFoodSelect(food);  // send food name to update FoodData
     }
 
     return (    // Portion Form html

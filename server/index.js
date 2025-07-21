@@ -147,10 +147,13 @@ app.post('/get-foods', requireLogin, async (req, res) => {
     }
 });
 
-app.post('/get-food-data', async (req, res) => {
-    const food = req.body.food;
+app.post('/get-food-data', requireLogin, async (req, res) => {
+    const {foodName, foodId, source} = req.body;
+    const username = req.session.username;
+
     try {
-        const foodData = await db.getFoodsDataByFood(food);
+        const { userId } = await db.getUserIdByUsername(username);
+        const foodData = await db.getFoodsDataByFood(foodId, source, userId);
         res.json(foodData);
     } catch (err) {
         res.status(500).json({'error': 'Failed to get food data'});
