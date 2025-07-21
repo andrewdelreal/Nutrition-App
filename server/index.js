@@ -70,6 +70,16 @@ app.post('/logout', requireLogin, (req, res) => {
     });
 });
 
+app.get('/userId', requireLogin, async (req, res) => {
+    const username = req.session.username;
+    try {
+        const userId = await db.getUserIdByUsername(username);
+        res.json({userId: userId});
+    } catch (err) {
+        res.status(500).json({'error': 'could not fetch userId'});
+    }
+})
+
 // may add a category or have a wait to search for foods
 app.post('/food', requireLogin, async (req, res) => {
     const { name, calories, carbs, fat, protein, weight } = req.body;
@@ -77,6 +87,19 @@ app.post('/food', requireLogin, async (req, res) => {
     try {
         await db.insertFood(name, calories, carbs, fat, protein, weight);
         res.json({'success': 'Food successfully added'});
+    } catch (err) {
+        res.status(500).json({'error': 'Failed to insert food into the database'});
+    }
+});
+
+app.post('/personal-food', requireLogin, async (req, res) => {
+    const { name, calories, carbs, fat, protein, weight } = req.body;
+    const username = req.session.username;
+
+    try {
+        const { userId } = await db.getUserIdByUsername(username);
+        await db.insertPersonalFood(name, calories, carbs, fat, protein, weight, userId);
+        res.json({'success': 'Personal Food successfully added'});
     } catch (err) {
         res.status(500).json({'error': 'Failed to insert food into the database'});
     }

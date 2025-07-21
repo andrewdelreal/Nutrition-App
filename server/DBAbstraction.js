@@ -96,6 +96,17 @@ class DBAbstraction {
         });
     }
 
+    getUserIdByUsername(username) {
+        const sql = 'SELECT userId FROM User WHERE username = ?;';
+
+        return new Promise((resolve, reject) => {
+            this.db.get(sql, [username], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    }
+
     insertFood(name, calories, carbs, fat, protein, weight) {
         const sql = `INSERT INTO Food (name, calories, carbs, fat, protein, weight) VALUES (?, ?, ?, ?, ?, ?);`;
 

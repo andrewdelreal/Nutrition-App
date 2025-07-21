@@ -132,7 +132,7 @@ function App() {
     function handleAddFood(newFood) {
         const addFood = async () => {
             try {
-                const res = await fetch('http://localhost:54321/food', {    // add the food from the food form
+                const res = await fetch('http://localhost:54321/personal-food', {    // add the food from the food form
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
