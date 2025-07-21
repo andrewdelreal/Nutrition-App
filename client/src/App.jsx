@@ -263,10 +263,12 @@ function App() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ query }),
+                credentials: 'include',
             });
 
             if (res.ok) {   // If able to get foods
                 const data = await res.json();
+                console.log(data);
                 return data;
             } else {
                 console.error('Failed to fetch foods');

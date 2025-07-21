@@ -204,7 +204,7 @@ class DBAbstraction {
                 WHERE name LIKE ? COLLATE NOCASE
                 AND userId = ?
             ) AS combined
-            ORDER BY source, name
+            ORDER BY source DESC
             LIMIT 10;
         `;
 
