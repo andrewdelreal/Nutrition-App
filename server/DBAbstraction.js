@@ -107,6 +107,17 @@ class DBAbstraction {
         });
     }
 
+    insertPersonalFood(name, calories, carbs, fat, protein, weight, userId) {
+        const sql = `INSERT INTO PersonalFood (name, calories, carbs, fat, protein, weight, userId) VALUES (?, ?, ?, ?, ?, ?, ?);`;
+
+        return new Promise((resolve, reject) => {
+            this.db.run(sql, [name, calories, carbs, fat, protein, weight, userId], (err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+    }
+
     insertPortion(date, quantity, food, username) {
         const sql = `
             WITH foodId AS (
@@ -167,15 +178,27 @@ class DBAbstraction {
         });
     }
 
-    getFoodsByQuery(query) {
+    getFoodsByQuery(query, userId) {
         const sql = `
-            SELECT name, foodId FROM Food
-            WHERE name LIKE ? COLLATE NOCASE
+            SELECT name, foodId, source
+            FROM (
+                SELECT name, foodId, 'global' AS source
+                FROM Food
+                WHERE name LIKE ? COLLATE NOCASE
+
+                UNION ALL
+
+                SELECT name, personalFoodId AS foodId, 'personal' AS source
+                FROM PersonalFood
+                WHERE name LIKE ? COLLATE NOCASE
+                AND userId = ?
+            ) AS combined
+            ORDER BY source, name
             LIMIT 10;
         `;
 
         return new Promise((resolve, reject) => {
-            this.db.all(sql, [`%${query}%`], (err, rows) => {
+            this.db.all(sql, [`%${query}%`, `%${query}%`, userId], (err, rows) => {
                 if (err) reject(err);
                 else resolve(rows);
             });
