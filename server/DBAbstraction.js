@@ -164,7 +164,6 @@ class DBAbstraction {
                 ?
             FROM foodId, userId;
         `;
-        console.log(sql);
 
         return new Promise((resolve, reject) => {
             this.db.run(sql, [food, username, date, quantity, source], (err) => {

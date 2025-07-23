@@ -40,6 +40,7 @@ app.use(express.static('public'));
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
+
     try {
         await db.registerUser(username, hashedPassword);
         req.session.username = username;
@@ -52,6 +53,7 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const user = await db.getUserByUsername(username);
+
     if (user && await bcrypt.compare(password, user.hashedPassword)) {
         req.session.username = username;
         res.json({username}); // will probably change this once i have web component
@@ -69,16 +71,6 @@ app.post('/logout', requireLogin, (req, res) => {
         res.json({ message: 'Logged out' });
     });
 });
-
-app.get('/userId', requireLogin, async (req, res) => {
-    const username = req.session.username;
-    try {
-        const userId = await db.getUserIdByUsername(username);
-        res.json({userId: userId});
-    } catch (err) {
-        res.status(500).json({'error': 'could not fetch userId'});
-    }
-})
 
 // may add a category or have a wait to search for foods
 app.post('/food', requireLogin, async (req, res) => {
@@ -106,7 +98,8 @@ app.post('/personal-food', requireLogin, async (req, res) => {
 });
 
 app.post('/portion', requireLogin, async (req, res) => {
-    const { date, quantity, food, source, username} = req.body;
+    const { date, quantity, food, source} = req.body;
+    const username = req.session.username;
 
     try {
         await db.insertPortion(date, quantity, food, source, username);
@@ -117,16 +110,13 @@ app.post('/portion', requireLogin, async (req, res) => {
 });
 
 app.post('/portion/get-portions', requireLogin, async (req, res) => {
-    const username = req.body.username;
-    const date = req.body.date;
-
+    const { date } = req.body;
+    const username = req.session.username;
     const day = getDay(date);
 
     try {
         let portions = await db.getPortionsAndNutritionByUsernameAndDay(username, day);
-
         portions = adjustPortions(portions);
-
         res.json(portions);
     } catch (err) {
         res.status(500).json({'error': 'Failed to get user portions'});
@@ -147,7 +137,7 @@ app.post('/get-foods', requireLogin, async (req, res) => {
 });
 
 app.post('/get-food-data', requireLogin, async (req, res) => {
-    const {foodName, foodId, source} = req.body;
+    const { foodId, source } = req.body;
     const username = req.session.username;
 
     try {
@@ -159,15 +149,7 @@ app.post('/get-food-data', requireLogin, async (req, res) => {
     }
 });
 
-app.post('/get-summary', requireLogin, async (req, res) => {
-    const username = req.body.username;
-    const date = req.body.date;
-
-    const day = getDay(date);
-});
-
 app.post('/delete-portion', requireLogin, async (req, res) => {
-    console.log('here');
     const portionId = req.body.portionId;
 
     try {

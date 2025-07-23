@@ -41,6 +41,7 @@ function App() {
                     setUsername(data.username);     // set username from the successfully logged in user
                     setSelectedDate(new Date().toISOString());  // set default portions to today
                     setFoodData([]);    // Default the food data
+                    console.log('Successfully logged in');
                 } else {
                     console.error('Login failed');
                 }
@@ -69,6 +70,7 @@ function App() {
                     setUsername(data.username);     // set username from the successfully logged in user
                     setSelectedDate(new Date().toISOString());  // set default portions to today
                     setFoodData([]);    // Default the food data
+                    console.log('Successfully logged in');
                 } else {
                     console.error('Login failed');
                 }
@@ -90,6 +92,7 @@ function App() {
 
                 if (res.ok) {
                     setUsername(null);  // update username (hides everything but the login box)
+                    console.log('Successfully logged out');
                 } else {
                     console.error('Logout failed');
                 }
@@ -104,8 +107,6 @@ function App() {
     function handleAddPortion(newPortion) {
         const addPortion = async () => {
             try {
-                newPortion['username'] = username; 
-
                 const res = await fetch('http://localhost:54321/portion', {     // add the portion from the portion form
                     method: 'POST',
                     headers: {
@@ -122,7 +123,7 @@ function App() {
                     console.error('Error adding portion:', res.statusText);
                 }
             } catch (err) {
-                console.log('Error adding portion: ', err);
+                console.error('Error adding portion: ', err);
             }
         }
 
@@ -144,10 +145,10 @@ function App() {
                 if (res.ok) {
                     console.log('Successfully added food');
                 } else {
-                    console.log('Error adding food: ');
+                    console.error('Error adding food: ');
                 }
             } catch (err) {
-                console.log('Error adding food: ', err);
+                console.error('Error adding food: ', err);
             }
         }
 
@@ -173,7 +174,7 @@ function App() {
                     console.error('Error deleting portion:', res.statusText);
                 }
             } catch (err) {
-                console.log('Error deleting portion: ', err);
+                console.error('Error deleting portion: ', err);
             }
         }
 
@@ -195,6 +196,7 @@ function App() {
                 if (res.ok) {
                     const data = await res.json();
                     setFoodData(data);
+                    console.log('Selected food in portion form');
                 } else {
                     console.error('Failed to fetch food data');
                     setFoodData([]);
@@ -247,6 +249,7 @@ function App() {
 
                     summary['date'] = selectedDate;     
                     setSummaryData(summary);    // set the summary date
+                    console.log('Successfully fetched portions');
                 }
             } else {
                 console.error('Failed to fetch portions');
