@@ -46,7 +46,7 @@ app.post('/register', async (req, res) => {
         req.session.username = username;
         res.json({username}); // will probably change this once i have web component
     } catch (err) {
-        res.status(500).json({'error': 'Username might already exist.'});
+        res.status(500).json({'error': `Username might already exist: ${err}`});
     }
 });
 
@@ -65,10 +65,10 @@ app.post('/login', async (req, res) => {
 app.post('/logout', requireLogin, (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            return res.status(500).json({ error: 'Logout failed' });
+            return res.status(500).json({'error': `Logout failed: ${err}`});
         }
         res.clearCookie('connect.sid'); // default session cookie name    
-        res.json({ message: 'Logged out' });
+        res.json({'message': 'Logged out'});
     });
 });
 
@@ -80,7 +80,7 @@ app.post('/food', requireLogin, async (req, res) => {
         await db.insertFood(name, calories, carbs, fat, protein, weight);
         res.json({'success': 'Food successfully added'});
     } catch (err) {
-        res.status(500).json({'error': 'Failed to insert food into the database'});
+        res.status(500).json({'error': `Failed to insert food into the database: ${err}`});
     }
 });
 
@@ -93,7 +93,7 @@ app.post('/personal-food', requireLogin, async (req, res) => {
         await db.insertPersonalFood(name, calories, carbs, fat, protein, weight, userId);
         res.json({'success': 'Personal Food successfully added'});
     } catch (err) {
-        res.status(500).json({'error': 'Failed to insert food into the database'});
+        res.status(500).json({'error': `Failed to insert food into the database: ${err}`});
     }
 });
 
@@ -105,7 +105,7 @@ app.post('/portion', requireLogin, async (req, res) => {
         await db.insertPortion(date, quantity, food, source, username);
         res.json({'success': 'Portion successfully added'});
     } catch (err) {
-        res.status(500).json({'error': 'Failed to insert portion into the database'});
+        res.status(500).json({'error': `Failed to insert portion into the database: ${err}`});
     }
 });
 
@@ -119,7 +119,7 @@ app.post('/portion/get-portions', requireLogin, async (req, res) => {
         portions = adjustPortions(portions);
         res.json(portions);
     } catch (err) {
-        res.status(500).json({'error': 'Failed to get user portions'});
+        res.status(500).json({'error': `Failed to get user portions, ${err}`});
     }
 });
 
@@ -132,7 +132,7 @@ app.post('/get-foods', requireLogin, async (req, res) => {
         const foods = await db.getFoodsByQuery(query, userId);
         res.json(foods);
     } catch (err) {
-        res.status(500).json({'error': 'Failed to get foods'});
+        res.status(500).json({'error': `Failed to get foods: ${err}`});
     }
 });
 
@@ -145,7 +145,7 @@ app.post('/get-food-data', requireLogin, async (req, res) => {
         const foodData = await db.getFoodsDataByFood(foodId, source, userId);
         res.json(foodData);
     } catch (err) {
-        res.status(500).json({'error': 'Failed to get food data'});
+        res.status(500).json({'error': `Failed to get food data: ${err}`});
     }
 });
 
@@ -156,7 +156,7 @@ app.post('/delete-portion', requireLogin, async (req, res) => {
         await db.deletePortionByPortionId(portionId);
         res.json({'success': 'Portion successfully deleted'});
     } catch (err) {
-        res.status(500).json({'error': 'Failed to delete portion'});
+        res.status(500).json({'error': `Failed to delete portion: ${err}`});
     }
 })
 
@@ -173,8 +173,7 @@ db.init()
         app.listen(port, () => console.log(`The server is up and running at http://localhost:${port}/index.html`)); 
     }) 
     .catch(err => { 
-        console.log('Problem setting up the database'); 
-        console.log(err); 
+        console.error(`Problem setting up the database: ${err}`); 
     });
 
 function getDay(date) {
