@@ -6,9 +6,6 @@ from tqdm import tqdm
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# branded_resp = urlopen('https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_branded_food_json_2025-04-24.zip')
-# foundation_resp = urlopen('https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_json_2025-04-24.zip')
-
 url = 'http://localhost:54321/food'
 
 def send_request(data):
@@ -68,11 +65,11 @@ def process_zip(zip_url, top_level_key, max_workers=20):
 
             if carbs < 0.0: carbs = 0
 
-            fat *= multiplier
+            fat *= multiplier                   # change food data according to ratio between quantity and 100.0 g
             carbs *= multiplier
             protein *= multiplier
 
-            if calories < 1:
+            if calories < 1:                    # calculate calories if not found
                 calories = carbs * 4 + fat * 9 + protein * 4
 
             data = {
@@ -90,7 +87,6 @@ def process_zip(zip_url, top_level_key, max_workers=20):
         for future in tqdm(as_completed(futures), total=len(futures), desc="Uploading"):
             pass
 
-# Run both datasets in parallel as well
 from threading import Thread
 
 t1 = Thread(target=process_zip, args=('https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_branded_food_json_2025-04-24.zip', 'BrandedFoods'))
