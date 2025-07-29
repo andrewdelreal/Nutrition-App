@@ -3,70 +3,100 @@ import ijson
 from zipfile import ZipFile
 from urllib.request import urlopen
 from tqdm import tqdm
+import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-resp = urlopen('https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_branded_food_json_2025-04-24.zip')
-# resp = urlopen('https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_json_2025-04-24.zip')
-myzip = ZipFile(BytesIO(resp.read()))
-# for line in myzip.open(myzip.namelist()[0]).readlines():
-#     print(line.decode('utf-8'), '\n\n')
-with myzip.open(myzip.namelist()[0]) as f:
-    # data = json.load(f)
-    # print(data['FoundationFoods'][0]['description'])  # gets the name of a portion
-    # print(data['FoundationFoods'][0]['foodPortions'][0]['gramWeight']) # gets the weight of a portion
-    # print(data['FoundationFoods'][0]['foodNutrients']) # gets all nutrients
-    # print(data['BrandedFoods'][21])
+# branded_resp = urlopen('https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_branded_food_json_2025-04-24.zip')
+# foundation_resp = urlopen('https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_json_2025-04-24.zip')
 
-    parser = ijson.items(f, 'BrandedFoods.item')
-    # parser = ijson.items(f, 'FoundationFoods.item')
-    for i, item in enumerate(tqdm(parser)):
-        weight, calories, carbs, fat, protein = 100, 0, 0, 0, 0   # initialize data values
-        carbs_diff_found, carbs_sum_found = False, False
+url = 'http://localhost:54321/food'
 
-        # if 'foodPortions' not in item: # If there is no portion info for weight of food
-        #     weight = 100    # default weight according to database
-        # elif len(item['foodPortions']) == 0:
-        #     weight = 100    # default weight according to database
-        
-        # print(f'{i + 1}) {item['description']}')
-        # print(f'Portion weight: {item['foodPortions'][0]['gramWeight']} g') # gets the weight of a portion
+def send_request(data):
+    try:
+        response = requests.post(url, json=data, timeout=10)
+        response.raise_for_status()
+    except requests.RequestException as e:
+         # Ignore errors silently, don't print
+        pass
 
-        for nutrient in item['foodNutrients']: # for each nutrient in a food
-            nutrient_id = nutrient['nutrient']['id']
-            amount = nutrient.get('amount')
+def process_zip(zip_url, top_level_key, max_workers=20):
+    print(f'Processing zip: {zip_url}')
+    resp = urlopen(zip_url)
+    myzip = ZipFile(BytesIO(resp.read()))
 
-            if amount is None:
-                continue  # skip if amount is missing or None
+    with myzip.open(myzip.namelist()[0]) as f, ThreadPoolExecutor(max_workers=max_workers) as executor:
+        parser = ijson.items(f, f'{top_level_key}.item')
+        futures = []
 
-            if nutrient_id == 2047:         # calories
-                calories = amount           # gets the amount of calories for 100 g of item
+        for item in tqdm(parser, desc=top_level_key):
+            weight, calories, carbs, fat, protein = 100, 0, 0, 0, 0   # initialize data values
+            carbs_diff_found, carbs_sum_found = False, False
+            multiplier = 1.0
 
-            elif nutrient_id == 1005:       # Carbs by difference
-                carbs = amount              # gets the amount of carbs for 100 g of item
-                carbs_diff_found = True
-            
-            elif nutrient_id == 1050 and not carbs_diff_found:       # carbs by summation
-                carbs = amount
-            
-            elif nutrient_id in [1063, 1009, 1079] and not carbs_diff_found and not carbs_sum_found: # 
-                carbs += amount             # If the nutrient is starch, fiber, or sugar
+            if 'foodPortions' in item: # If there is no portion info for weight of food
+                if len(item['foodPortions']) != 0:
+                    weight = float(item['foodPortions'][0]['gramWeight'])
+                    multiplier = float(weight) / 100.0
 
-            elif nutrient_id == 1004:       # Total Fat
-                fat = amount                # gets the amount of fat for 100 g of item 
+            for nutrient in item['foodNutrients']: # for each nutrient in a food
+                nutrient_id = nutrient['nutrient']['id']
+                amount = nutrient.get('amount')
 
-            elif nutrient_id == 1003:       # protein
-                protein = amount            # gets the amount of protein for 100 g of item
+                if amount is None:
+                    continue  # skip if amount is missing or None
 
-        if carbs < 0.0: carbs = 0
+                amount = float(amount)  
 
-        if calories < 1:
-            calories = carbs * 4 + fat * 9 + protein * 4
+                if nutrient_id == 2047:         # calories
+                    calories = amount           # gets the amount of calories for 100 g of item
 
-        # if i == 326: 
-        #     my_string = str(item['description'])+ '\n' + str(f'Wt: {weight} g, Ca: {calories} kCal, Cb: {carbs} g, Fat: {fat} g, Pr: {protein}') + '\n\n' + str(item['foodNutrients'])
-        #     file_path = 'output.txt'
+                elif nutrient_id == 1005:       # Carbs by difference
+                    carbs = amount              # gets the amount of carbs for 100 g of item
+                    carbs_diff_found = True
+                
+                elif nutrient_id == 1050 and not carbs_diff_found:       # carbs by summation
+                    carbs = amount
+                
+                elif nutrient_id in [1063, 1009, 1079] and not carbs_diff_found and not carbs_sum_found: # 
+                    carbs += amount             # If the nutrient is starch, fiber, or sugar
 
-        #     with open(file_path, "w") as file_object:
-        #         file_object.write(my_string)
+                elif nutrient_id == 1004:       # Total Fat
+                    fat = amount                # gets the amount of fat for 100 g of item 
 
-        # print(f'{i + 1}) {item['description']}')
-        # print(f'Wt: {weight} g, Ca: {calories} kCal, Cb: {carbs} g, Fat: {fat} g, Pr: {protein} g\n')
+                elif nutrient_id == 1003:       # protein
+                    protein = amount            # gets the amount of protein for 100 g of item
+
+            if carbs < 0.0: carbs = 0
+
+            fat *= multiplier
+            carbs *= multiplier
+            protein *= multiplier
+
+            if calories < 1:
+                calories = carbs * 4 + fat * 9 + protein * 4
+
+            data = {
+                'name': item['description'],
+                'calories': calories,
+                'carbs': carbs,
+                'fat': fat,
+                'protein': protein,
+                'weight': weight
+            }
+
+            futures.append(executor.submit(send_request, data))
+
+        # Wait for all requests to complete
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Uploading"):
+            pass
+
+# Run both datasets in parallel as well
+from threading import Thread
+
+t1 = Thread(target=process_zip, args=('https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_branded_food_json_2025-04-24.zip', 'BrandedFoods'))
+t2 = Thread(target=process_zip, args=('https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_json_2025-04-24.zip', 'FoundationFoods'))
+
+t1.start()
+t2.start()
+t1.join()
+t2.join()

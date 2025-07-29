@@ -45,7 +45,8 @@ class DBAbstraction {
                 "date" TEXT,
                 "quantity" REAL,
                 "foodId" INTEGER NOT NULL,
-                "userId" INTEGER NOT NULL, 
+                "userId" INTEGER NOT NULL,
+                "source" TEXT DEFAULT 'global', 
                 FOREIGN KEY("foodId") REFERENCES "Food"("foodId"),
                 FOREIGN KEY("userId") REFERENCES "User"("userId")
             );
