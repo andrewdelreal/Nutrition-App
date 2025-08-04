@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "target": "es6",
+    "module": "commonjs",
     "jsx": "react-jsx", // or "react" for older versions
     "strict": true,
     "moduleResolution": "node",
@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "outDir": "./built",
   },
-  "include": ["./src/DBAbstraction.ts"]
+  "include": ["./src/**/*"]
 }

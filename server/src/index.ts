@@ -1,17 +1,16 @@
-'use strict' 
- 
-const express = require('express'); 
-const morgan = require('morgan'); 
-const bodyParser = require("body-parser"); 
-const DBAbstraction = require('./DBAbstraction');
-const session = require('express-session');
-const bcrypt = require('bcrypt');
-const path = require('path');
-const cors = require('cors');
+import express, { Request, Response, NextFunction } from 'express'; 
+import morgan from 'morgan';
+import bodyParser from 'body-parser';
+import path from 'path';
+import session from 'express-session';
+import bcrypt from 'bcrypt';
+import cors from 'cors';
+import DBAbstraction from './DBAbstraction';
+import { UserRow, PortionWithNutrition } from './DBRows';
 
 const port = 54321;
- 
 const app = express();
+
 const dbPath = path.join(__dirname, '..', 'data', 'nutrition.sqlite')
 const db = new DBAbstraction(dbPath); 
  
@@ -36,7 +35,12 @@ app.use(cors({
 
 app.use(express.static('public'));  
 
-// all the login stuff will change once i have the webcomponent
+declare module 'express-session' {
+  interface SessionData {
+    username: string;
+  }
+}
+
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -44,7 +48,7 @@ app.post('/register', async (req, res) => {
     try {
         await db.registerUser(username, hashedPassword);
         req.session.username = username;
-        res.json({username}); // will probably change this once i have web component
+        res.json({username});
     } catch (err) {
         res.status(500).json({'error': `Username might already exist: ${err}`});
     }
@@ -86,7 +90,7 @@ app.post('/food', requireLogin, async (req, res) => {
 
 app.post('/personal-food', requireLogin, async (req, res) => {
     const { name, calories, carbs, fat, protein, weight } = req.body;
-    const username = req.session.username;
+    const username = req.session.username!;
 
     try {
         const { userId } = await db.getUserIdByUsername(username);
@@ -99,7 +103,7 @@ app.post('/personal-food', requireLogin, async (req, res) => {
 
 app.post('/portion', requireLogin, async (req, res) => {
     const { date, quantity, food, source} = req.body;
-    const username = req.session.username;
+    const username = req.session.username!;
 
     try {
         await db.insertPortion(date, quantity, food, source, username);
@@ -111,11 +115,11 @@ app.post('/portion', requireLogin, async (req, res) => {
 
 app.post('/portion/get-portions', requireLogin, async (req, res) => {
     const { date } = req.body;
-    const username = req.session.username;
+    const username = req.session.username!;
     const day = getDay(date);
 
     try {
-        let portions = await db.getPortionsAndNutritionByUsernameAndDay(username, day);
+        let portions: PortionWithNutrition[] = await db.getPortionsAndNutritionByUsernameAndDay(username, day);
         portions = adjustPortions(portions);
         res.json(portions);
     } catch (err) {
@@ -125,7 +129,7 @@ app.post('/portion/get-portions', requireLogin, async (req, res) => {
 
 app.post('/get-foods', requireLogin, async (req, res) => {
     const query = req.body.query;
-    const username = req.session.username;
+    const username = req.session.username!;
 
     try {
         const { userId } = await db.getUserIdByUsername(username);
@@ -138,7 +142,7 @@ app.post('/get-foods', requireLogin, async (req, res) => {
 
 app.post('/get-food-data', requireLogin, async (req, res) => {
     const { foodId, source } = req.body;
-    const username = req.session.username;
+    const username = req.session.username!;
 
     try {
         const { userId } = await db.getUserIdByUsername(username);
@@ -176,13 +180,13 @@ db.init()
         console.error(`Problem setting up the database: ${err}`); 
     });
 
-function getDay(date) {
+function getDay(date: string) {
     return date.substring(0, date.indexOf("T"));
 }
 
-function adjustPortions(portions) {
+function adjustPortions(portions: PortionWithNutrition[]) {
     for (let i = 0; i < portions.length; i++) {
-        const multiplier = parseFloat(portions[i]['quantity'])
+        const multiplier = portions[i]['quantity']
         portions[i]['calories'] *=  multiplier;
         portions[i]['carbs'] *=  multiplier;
         portions[i]['fat'] *=  multiplier;
@@ -193,7 +197,7 @@ function adjustPortions(portions) {
     return portions;
 }
 
-function requireLogin(req, res, next) {
+function requireLogin(req: Request, res: Response, next: NextFunction) {
     if (req.session && req.session.username) {
         next(); 
     } else {

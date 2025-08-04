@@ -1,4 +1,5 @@
 import * as sqlite3 from 'sqlite3';
+import { UserRow, UserIdRow, PortionWithNutrition } from './DBRows';
 
 class DBAbstraction {
     fileName: string;
@@ -91,10 +92,10 @@ class DBAbstraction {
     getUserByUsername(username: string) {
         const sql = 'SELECT username, hashedPassword FROM User WHERE username = ?;';
 
-        return new Promise((resolve, reject) => {
+        return new Promise<UserRow>((resolve, reject) => {
             this.db.get(sql, [username], (err, row) => {
                 if (err) reject(err);
-                else resolve(row);
+                else resolve(row as UserRow);
             });
         });
     }
@@ -102,10 +103,10 @@ class DBAbstraction {
     getUserIdByUsername(username: string) {
         const sql = 'SELECT userId FROM User WHERE username = ?;';
 
-        return new Promise((resolve, reject) => {
+        return new Promise<UserIdRow>((resolve, reject) => {
             this.db.get(sql, [username], (err, row) => {
                 if (err) reject(err);
-                else resolve(row);
+                else resolve(row as UserIdRow);
             });
         });
     }
@@ -121,7 +122,7 @@ class DBAbstraction {
         });
     }
 
-    insertPersonalFood(name: string, calories: number, carbs: number, fat: number, protein: number, weight: number, userId: string) {
+    insertPersonalFood(name: string, calories: number, carbs: number, fat: number, protein: number, weight: number, userId: number) {
         const sql = `INSERT INTO PersonalFood (name, calories, carbs, fat, protein, weight, userId) VALUES (?, ?, ?, ?, ?, ?, ?);`;
 
         return new Promise<void>((resolve, reject) => {
@@ -197,15 +198,15 @@ class DBAbstraction {
         ORDER BY Portion.date ASC;
         `;
 
-        return new Promise((resolve, reject) => {
+        return new Promise<PortionWithNutrition[]>((resolve, reject) => {
             this.db.all(sql, [username, `${day}%`], (err, rows) => {
                 if (err) reject(err);
-                else resolve(rows);
+                else resolve(rows as PortionWithNutrition[]);
             });
         });
     }
 
-    getFoodsByQuery(query: string, userId: string) {
+    getFoodsByQuery(query: string, userId: number) {
         const sql = `
             SELECT name, foodId, source
             FROM (
