@@ -12,7 +12,7 @@ const cors = require('cors');
 const port = 54321;
  
 const app = express();
-const dbPath = path.join(__dirname, 'data', 'nutrition.sqlite')
+const dbPath = path.join(__dirname, '..', 'data', 'nutrition.sqlite')
 const db = new DBAbstraction(dbPath); 
  
 app.use(session({
