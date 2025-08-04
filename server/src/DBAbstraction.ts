@@ -1,12 +1,14 @@
-const sqlite3 = require('sqlite3');
+import * as sqlite3 from 'sqlite3';
 
 class DBAbstraction {
-    constructor(fileName) {
+    fileName: string;
+    db!: sqlite3.Database;
+    constructor(fileName: string) {
         this.fileName = fileName;
     }
 
     init() {
-        return new Promise((resolve, reject) => { 
+        return new Promise<void>((resolve, reject) => { 
             this.db = new sqlite3.Database(this.fileName, async (err) => { 
                 if(err) { 
                     reject(err); 
@@ -64,7 +66,7 @@ class DBAbstraction {
             );
         `; 
  
-        return new Promise((resolve, reject) => { 
+        return new Promise<void>((resolve, reject) => { 
             this.db.exec(sql, (err) => {                 
                 if(err) { 
                     reject(err); 
@@ -75,10 +77,10 @@ class DBAbstraction {
         }); 
     } 
 
-    registerUser(username, hashedPassword) {
+    registerUser(username: string, hashedPassword: string) {
         const sql = 'INSERT INTO User (username, hashedPassword) VALUES (?, ?);';
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             this.db.run(sql, [username, hashedPassword], (err) => {
                 if (err) reject(err);
                 else resolve();
@@ -86,7 +88,7 @@ class DBAbstraction {
         });
     }
 
-    getUserByUsername(username) {
+    getUserByUsername(username: string) {
         const sql = 'SELECT username, hashedPassword FROM User WHERE username = ?;';
 
         return new Promise((resolve, reject) => {
@@ -97,7 +99,7 @@ class DBAbstraction {
         });
     }
 
-    getUserIdByUsername(username) {
+    getUserIdByUsername(username: string) {
         const sql = 'SELECT userId FROM User WHERE username = ?;';
 
         return new Promise((resolve, reject) => {
@@ -108,10 +110,10 @@ class DBAbstraction {
         });
     }
 
-    insertFood(name, calories, carbs, fat, protein, weight) {
+    insertFood(name: string, calories: number, carbs: number, fat: number, protein: number, weight: number) {
         const sql = `INSERT INTO Food (name, calories, carbs, fat, protein, weight) VALUES (?, ?, ?, ?, ?, ?);`;
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             this.db.run(sql, [name, calories, carbs, fat, protein, weight], (err) => {
                 if (err) reject(err);
                 else resolve();
@@ -119,10 +121,10 @@ class DBAbstraction {
         });
     }
 
-    insertPersonalFood(name, calories, carbs, fat, protein, weight, userId) {
+    insertPersonalFood(name: string, calories: number, carbs: number, fat: number, protein: number, weight: number, userId: string) {
         const sql = `INSERT INTO PersonalFood (name, calories, carbs, fat, protein, weight, userId) VALUES (?, ?, ?, ?, ?, ?, ?);`;
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             this.db.run(sql, [name, calories, carbs, fat, protein, weight, userId], (err) => {
                 if (err) reject(err);
                 else resolve();
@@ -130,7 +132,7 @@ class DBAbstraction {
         });
     }
 
-    insertPortion(date, quantity, food, source, username) {
+    insertPortion(date: string, quantity: GLfloat, food: string, source: string, username: string) {
         let sql = ``;
 
         if (source === 'personal') {
@@ -166,7 +168,7 @@ class DBAbstraction {
             FROM foodId, userId;
         `;
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             this.db.run(sql, [food, username, date, quantity, source], (err) => {
                 if (err) reject(err);
                 else resolve();
@@ -174,7 +176,7 @@ class DBAbstraction {
         });
     }
 
-    getPortionsAndNutritionByUsernameAndDay(username, day) {
+    getPortionsAndNutritionByUsernameAndDay(username: string, day: string) {
         const sql = `
         SELECT 
             Portion.portionId,
@@ -203,7 +205,7 @@ class DBAbstraction {
         });
     }
 
-    getFoodsByQuery(query, userId) {
+    getFoodsByQuery(query: string, userId: string) {
         const sql = `
             SELECT name, foodId, source
             FROM (
@@ -230,9 +232,9 @@ class DBAbstraction {
         });
     }
 
-    getFoodsDataByFood(foodId, source, userId) {
+    getFoodsDataByFood(foodId: number, source: string, userId: number) {
         let sql = ``;
-        let params = [];
+        let params: number[] = [];
 
         if (source === 'personal') {
             sql = `
@@ -257,13 +259,13 @@ class DBAbstraction {
         });
     }
 
-    deletePortionByPortionId(portionId) {
+    deletePortionByPortionId(portionId: number) {
         const sql = `
             DELETE FROM Portion
             WHERE portionId = ?;
         `;
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             this.db.run(sql, [portionId], (err) => {
                 if (err) reject(err);
                 else resolve();
@@ -272,4 +274,4 @@ class DBAbstraction {
     }
 }
 
-module.exports = DBAbstraction;
+export default DBAbstraction;
