@@ -1,30 +1,36 @@
+import React from 'react';
 import styles from './css/AuthBox.module.css';
 
-function AuthBox({ onLogin, onRegister }) {
-    function handleLogin(event) {
+type AuthBoxProps = {
+    onLogin: (credentials: { username: string; password: string }) => void;
+    onRegister: (credentials: { username: string; password: string }) => void;
+}
+
+const AuthBox: React.FC<AuthBoxProps> = ({ onLogin, onRegister }) => {
+    function handleLogin(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         
         const credentials = {       // get user and password
-            username: event.target.username.value,
-            password: event.target.password.value
+            username: event.currentTarget.username.value,
+            password: event.currentTarget.password.value
         };
 
         onLogin(credentials);       // attempt to login
 
-        event.target.reset();
+        event.currentTarget.reset();
     } 
 
-    function handleRegister(event) {
+    function handleRegister(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         const credentials = {       // get user and password
-            username: event.target.newUsername.value,
-            password: event.target.newPassword.value
+            username: event.currentTarget.newUsername.value,
+            password: event.currentTarget.newPassword.value
         };
 
         onRegister(credentials);    // attempt to login
 
-        event.target.reset();
+        event.currentTarget.reset();
     }
 
     return (
