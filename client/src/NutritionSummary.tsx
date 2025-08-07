@@ -1,8 +1,19 @@
 import './css/NutritionSummary.module.css';
 import { format } from 'date-fns';
 
-function NutritionSummary({ summary }) {
-    function formatDate(isoString) {    // Format from iso to readable date
+type NutritionSummaryProps = {
+    summary: {
+        date: string;
+        calories: number;
+        carbs: number;
+        fat: number;
+        protein: number;
+        weight: number;
+    }
+}
+
+function NutritionSummary({ summary }: NutritionSummaryProps) {
+    function formatDate(isoString: string) {    // Format from iso to readable date
         return format(new Date(isoString), 'MMM dd, yyyy')
     }
 
