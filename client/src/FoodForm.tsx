@@ -1,20 +1,34 @@
+import React from 'react';
 import styles from './css/FoodForm.module.css';
 
-function FoodForm({ onSubmit }) {
-    function handleSubmit(event) {
+type FoodFormProps = {
+    onSubmit: (newFood: {
+        name: string;
+        calories: number;
+        carbs: number;
+        fat: number;
+        protein: number;
+        weight: number;
+    }) => void;
+}
+
+function FoodForm({ onSubmit }: { onSubmit: FoodFormProps['onSubmit'] }) {
+    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
+        const form = event.currentTarget.elements;
+
         const newFood = {   // get new food from form
-            name: event.target.name.value,
-            calories: event.target.calories.value,
-            carbs: event.target.carbs.value,
-            fat: event.target.fat.value,
-            protein: event.target.protein.value,
-            weight: event.target.weight.value
+            name: (form.namedItem('name') as HTMLInputElement).value,
+            calories: Number((form.namedItem('calories') as HTMLInputElement).value),
+            carbs: Number((form.namedItem('carbs') as HTMLInputElement).value),
+            fat: Number((form.namedItem('fat') as HTMLInputElement).value),
+            protein: Number((form.namedItem('protein') as HTMLInputElement).value),
+            weight: Number((form.namedItem('weight') as HTMLInputElement).value),
         };
 
         onSubmit(newFood);      // attempt to add new food
-        event.target.reset();
+        event.currentTarget.reset();
     }
 
     return (    // Food form html

@@ -9,10 +9,12 @@ type AuthBoxProps = {
 function AuthBox({ onLogin, onRegister }: {onLogin: AuthBoxProps['onLogin']; onRegister: AuthBoxProps['onRegister']}) {
     function handleLogin(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+
+        const form = event.currentTarget.elements;
         
         const credentials = {       // get user and password
-            username: (event.currentTarget.elements.namedItem('username') as HTMLInputElement).value,
-            password: (event.currentTarget.elements.namedItem('password') as HTMLInputElement).value,
+            username: (form.namedItem('username') as HTMLInputElement).value,
+            password: (form.namedItem('password') as HTMLInputElement).value,
         };
 
         onLogin(credentials);       // attempt to login
@@ -23,9 +25,11 @@ function AuthBox({ onLogin, onRegister }: {onLogin: AuthBoxProps['onLogin']; onR
     function handleRegister(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
+        const form = event.currentTarget.elements;
+
         const credentials = {       // get user and password
-            username: (event.currentTarget.elements.namedItem('newUsername') as HTMLInputElement).value,
-            password: (event.currentTarget.elements.namedItem('newPassword') as HTMLInputElement).value,
+            username: (form.namedItem('newUsername') as HTMLInputElement).value,
+            password: (form.namedItem('newPassword') as HTMLInputElement).value,
         };
 
         onRegister(credentials);    // attempt to login
