@@ -1,6 +1,16 @@
 import './css/FoodData.module.css';
 
-function FoodData({ foodData }) {
+type FoodDataRow = {
+    foodId: number;
+    name: string;
+    calories: number;
+    carbs: number;
+    fat: number;
+    protein: number;
+    weight: number;
+}
+
+function FoodData({ foodData }: { foodData: FoodDataRow }) {
     const tableRow = (       
         //  Get foodData into a table row
         <tr key={foodData.foodId}>
