@@ -1,12 +1,27 @@
 import './css/PortionTable.module.css';
 import { format } from 'date-fns';
 
-function PortionTable({ portions, date, onDelete }) {
-    function formatDate(isoString) {    // Format from iso to readable date
+type PortionTableProps = {
+    onDelete: (portionId: number) => void;
+}
+
+type Portion = {
+    portionId: number;
+    date: string;
+    name: string;
+    calories: number;
+    carbs: number;
+    fat: number;
+    protein: number;
+    weight: number;
+}
+
+function PortionTable({ portions, date, onDelete }: {portions: Portion[]; date: string; onDelete: PortionTableProps['onDelete']}) {
+    function formatDate(isoString: string) {    // Format from iso to readable date
         return format(new Date(isoString), 'MMM dd, yyyy')
     }
 
-    function handleDelete(portionId) {
+    function handleDelete(portionId: number) {
         onDelete(portionId);    // attempt to delete the portion row
     }
 
