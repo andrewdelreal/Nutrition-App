@@ -1,6 +1,11 @@
 import './css/Header.module.css';
 
-function Header({ title, username }) {
+type HeaderProps = {
+    title: string;
+    username: string;
+}
+
+function Header({ title, username }: HeaderProps) {
     return (    // header html
         <div>
             <h1>{title}</h1>
