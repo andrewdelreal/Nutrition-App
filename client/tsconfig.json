@@ -8,6 +8,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
   },
   "include": ["./src/**/*"]
 }
