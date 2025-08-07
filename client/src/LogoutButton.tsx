@@ -1,7 +1,12 @@
+import React from 'react';
 import './css/Logout.module.css';
 
-function LogoutButton({ onLogout }) {
-    function handleLogout(event) {
+type LogoutButtonProps = {
+    onLogout: () => void;
+}
+
+function LogoutButton({ onLogout }: LogoutButtonProps) {
+    function handleLogout(event: React.MouseEvent<HTMLButtonElement>) {
         event.preventDefault();
 
         onLogout();     // attempt to logout
