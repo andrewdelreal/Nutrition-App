@@ -1,40 +1,57 @@
 import styles from './css/PortionForm.module.css';
 import { useState } from 'react';
+import React from 'react';
 
-function PortionForm({ onDateChange, onFoodSearchChange, onSubmit, onFoodSelect }) {
-    const [foods, setFoods] = useState([]);
+type PortionFormProps = {
+    onDateChange: (date: string) => void;
+    onFoodSearchChange: (search: string) => Promise<{ foodId: number; name: string; source: string }[]>;
+    onSubmit: (portion: { food: string; date: string; quantity: number; source: string }) => void; // Callback for form submission
+    onFoodSelect: (food: { foodId: number; name: string; source: string }) => void; // Callback for food selection
+} 
+
+type Food = {
+    foodId: number;
+    name: string;
+    source: string;
+};
+
+function PortionForm({ onDateChange, onFoodSearchChange, onSubmit, onFoodSelect }: 
+    {onDateChange: PortionFormProps['onDateChange']; onFoodSearchChange: PortionFormProps['onFoodSearchChange']; onSubmit: PortionFormProps['onSubmit']; onFoodSelect: PortionFormProps['onFoodSelect']}) {
+    const [foods, setFoods] = useState<Food[]>([]);
     const [foodSource, setFoodSource] = useState('');
 
-    function handleDateChange(event) {
+    function handleDateChange(event: React.ChangeEvent<HTMLInputElement>) {
         event.preventDefault();
-        const newDate = event.target.value;
+        const newDate = event.currentTarget.value;
         onDateChange(newDate);      // Notify app of a new date selection
     }
 
-    function handleSubmit(event) {
+    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
+        const form = event.currentTarget.elements;
+
         const newPortion = {    // create new portion object
-            food: event.target.foodSearch.value,
-            date: event.target.date.value,
-            quantity: event.target.quantity.value,
+            food: (form.namedItem('foodSearch') as HTMLInputElement).value,
+            date: (form.namedItem('date') as HTMLInputElement).value,
+            quantity: Number((form.namedItem('quantity') as HTMLInputElement).value),
             source: foodSource
         };
 
         onSubmit(newPortion);   // attempt to add portion
-        event.target.foodSearch.value = '';
-        event.target.quantity.value = '';
+        (form.namedItem('foodSearch') as HTMLInputElement).value = '';
+        (form.namedItem('quantity') as HTMLInputElement).value = '';
     }
 
-    async function handleFoodSearchChange(event) {
+    async function handleFoodSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
         event.preventDefault();
-        const search = event.target.value;
+        const search = event.currentTarget.value;
         const results = await onFoodSearchChange(search); // get all (10) foods matching search
         setFoods(results);  // set Portion form foodSearch options to the queried results
     }
 
-    function handleFoodSelect(food) {
-        document.getElementById('foodSearch').value = food.name;  // If a food is selected from the search list, set the form value
+    function handleFoodSelect(food: Food) {
+        (document.getElementById('foodSearch')! as HTMLInputElement).value = food.name;  // If a food is selected from the search list, set the form value
         setFoods([]);   // clear the search list
         setFoodSource(food.source);
         onFoodSelect(food);  // send food name to update FoodData
