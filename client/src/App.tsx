@@ -10,21 +10,60 @@ import FoodForm from './FoodForm';
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 
-function App() {
-    const [username, setUsername] = useState(null);
-    const [portions, setPortions] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
-    const [foodData, setFoodData] = useState([]);
-    const [summaryData, setSummaryData] = useState([]);
+type PortionWithNutrition = {
+  portionId: number;
+  name: string;
+  calories: number;
+  carbs: number;
+  fat: number;
+  protein: number;
+  weight: number;
+  date: string;
+  quantity: number;
+}
 
-    function formatDates(portions) {    // Format the dates of the portions data
+type FoodNutrition = {
+    foodId: number;
+    name: string;
+    calories: number;
+    carbs: number;
+    fat: number;
+    protein: number;
+    weight: number; 
+}
+
+type SummaryData = {
+    date: string;
+    calories: number;
+    carbs: number;
+    fat: number;
+    protein: number;
+    weight: number;
+}
+
+type AppProps = {
+    handleLogin: (credentials: { username: string; password: string }) => void;
+    handleRegister: (credentials: { username: string; password: string }) => void;
+    handleAddPortion: (portion: { food: string; date: string; quantity: number; source: string }) => void;
+    handleAddFood: (food: { name: string, calories: number, carbs: number, fat: number, protein: number, weight: number }) => void;
+    handleFoodSelect: (food: { foodId: number, source: string }) => void;
+}
+
+function App() {
+    const [username, setUsername] = useState<string>('');
+    const [portions, setPortions] = useState<PortionWithNutrition[]>([]);
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
+    const [foodData, setFoodData] = useState<FoodNutrition>({} as FoodNutrition);  // Food data for the portion form
+    const [summaryData, setSummaryData] = useState<SummaryData>({} as SummaryData);  // Summary data for the nutrition summary
+
+    function formatDates(portions: PortionWithNutrition[]) {    // Format the dates of the portions data
         return portions.map(portion => ({
             ...portion,
             date: format(new Date(portion.date), 'MMM dd, yyyy hh:mm a')  // Ensures string to prevent frontend from converting back to ISO
         }));
     }
 
-    function handleLogin(credentials) {
+    function handleLogin(credentials: Parameters<AppProps['handleLogin']>[0]) {
         const login = async () => {
             try {
                 const res = await fetch('http://localhost:54321/login', {   // login
@@ -40,7 +79,7 @@ function App() {
                     const data = await res.json();
                     setUsername(data.username);     // set username from the successfully logged in user
                     setSelectedDate(new Date().toISOString());  // set default portions to today
-                    setFoodData([]);    // Default the food data
+                    setFoodData({} as FoodNutrition);    // Default the food data
                     console.log('Successfully logged in');
                 } else {
                     console.error('Login failed');
@@ -53,7 +92,7 @@ function App() {
         login();
     }
 
-    function handleRegister(credentials) {
+    function handleRegister(credentials: Parameters<AppProps['handleRegister']>[0]) {
         const register = async () => {
             try {
                 const res = await fetch('http://localhost:54321/register', {    // register (add user to database) and login
@@ -69,7 +108,7 @@ function App() {
                     const data = await res.json();
                     setUsername(data.username);     // set username from the successfully logged in user
                     setSelectedDate(new Date().toISOString());  // set default portions to today
-                    setFoodData([]);    // Default the food data
+                    setFoodData({} as FoodNutrition);    // Default the food data
                     console.log('Successfully logged in');
                 } else {
                     console.error('Login failed');
@@ -91,7 +130,7 @@ function App() {
                 });
 
                 if (res.ok) {
-                    setUsername(null);  // update username (hides everything but the login box)
+                    setUsername('');  // update username (hides everything but the login box)
                     console.log('Successfully logged out');
                 } else {
                     console.error('Logout failed');
@@ -104,7 +143,7 @@ function App() {
         logout();
     }
 
-    function handleAddPortion(newPortion) {
+    function handleAddPortion(newPortion: Parameters<AppProps['handleAddPortion']>[0]) {
         const addPortion = async () => {
             try {
                 const res = await fetch('http://localhost:54321/portion', {     // add the portion from the portion form
@@ -130,7 +169,7 @@ function App() {
         addPortion();
     }
 
-    function handleAddFood(newFood) {
+    function handleAddFood(newFood: Parameters<AppProps['handleAddFood']>[0]) {
         const addFood = async () => {
             try {
                 const res = await fetch('http://localhost:54321/personal-food', {    // add the food from the food form
@@ -155,7 +194,7 @@ function App() {
         addFood();
     }
 
-    function handlePortionDelete(portionId) {
+    function handlePortionDelete(portionId: number) {
         const deletePortion = async () => {
             try {
                 const res = await fetch('http://localhost:54321/delete-portion', {  // delete the portion
@@ -181,7 +220,7 @@ function App() {
         deletePortion();
     }
 
-    function handleFoodSelect(food) {
+    function handleFoodSelect(food: Parameters<AppProps['handleFoodSelect']>[0]) {
         const getFoodData = async () => {
             try {
                 const res = await fetch('http://localhost:54321/get-food-data', {  // Get food details
@@ -194,16 +233,16 @@ function App() {
                 });
 
                 if (res.ok) {
-                    const data = await res.json();
+                    const data: FoodNutrition = await res.json();
                     setFoodData(data);
                     console.log('Selected food in portion form');
                 } else {
                     console.error('Failed to fetch food data');
-                    setFoodData([]);
+                    setFoodData({} as FoodNutrition);
                 }
             } catch (err) {
                 console.error('Fetch error: ', err);
-                setFoodData([]);
+                setFoodData({} as FoodNutrition);
             }
         }
 
@@ -218,7 +257,7 @@ function App() {
         }}, [username, selectedDate]
     );
 
-    async function fetchPortionsByDate(date) {
+    async function fetchPortionsByDate(date: string) {
         try {
             const res = await fetch('http://localhost:54321/portion/get-portions', {    // Get portions for the date selected
                 method: 'POST',
@@ -236,9 +275,9 @@ function App() {
                 setPortions(formattedData);     // update portions
 
                 if (data.length === 0) {
-                    setSummaryData([]);     // if there is nothing to summarize
+                    setSummaryData({} as SummaryData);     // if there is nothing to summarize
                 } else {
-                    let summary = data.reduce((acc, item) => {      // create the summary values
+                    let summary = data.reduce((acc: SummaryData, item: SummaryData) => {      // create the summary values
                         acc.calories += item.calories || 0;
                         acc.carbs += item.carbs || 0;
                         acc.fat += item.fat || 0;
@@ -259,7 +298,7 @@ function App() {
         }
     }
 
-    async function fetchFoodsBySearch(query) {
+    async function fetchFoodsBySearch(query: string) {
         try {
             const res = await fetch('http://localhost:54321/get-foods', {   // Get all foods matching search
                 method: 'POST',
@@ -286,7 +325,7 @@ function App() {
     return (  // Main app layout
         <div>
             <Header title='Nutrition Tracker' username={username}/>
-            {!username ? (      // if not logged in, only show login options
+            {username === '' ? (      // if not logged in, only show login options
                 <AuthBox onLogin={handleLogin} onRegister={handleRegister}/> 
             ) : (   // if logged in, show everything else
                 <div>       
@@ -294,15 +333,12 @@ function App() {
                     <PortionTable portions={portions} date={selectedDate} onDelete={handlePortionDelete}/>
                     <PortionForm onDateChange={setSelectedDate} onFoodSearchChange={fetchFoodsBySearch} onSubmit={handleAddPortion} onFoodSelect={handleFoodSelect}/>
 
-                    {foodData.length !== 0 ? (  // If a food is selected
-                        <FoodData foodData={foodData}/>
-                    ) : (<></>)}
+                    {foodData?.foodId !== undefined && <FoodData foodData={foodData} />}
 
                     <FoodForm onSubmit={handleAddFood}/>
 
-                    {summaryData.length !== 0 ? (   // If there are portions for the summary
-                        <NutritionSummary summary={summaryData}/>
-                    ) : (<></>)}
+                    {summaryData?.date && <NutritionSummary summary={summaryData} />}
+
                 </div>
             )}
         
